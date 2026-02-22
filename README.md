@@ -1,13 +1,10 @@
 # COMP3011
-# Full 90+ Reverse-Engineering Plan: F1 Strategic Intelligence API
-
-Let me map every marking criterion to concrete deliverables, then give you the full build plan.
 
 ---
 
 ## Marking Scheme Dissected
 
-| Criterion | Marks | What "Outstanding" Actually Means |
+| Criterion | Marks | What To Do |
 |---|---|---|
 | API Functionality & Implementation | 25 | Novel endpoints, not just CRUD. Analytical depth. |
 | Code Quality & Architecture | 20 | Modular, layered, professional patterns |
@@ -18,21 +15,20 @@ Let me map every marking criterion to concrete deliverables, then give you the f
 | Presentation | 15 | Visual demos, architecture diagrams, confident delivery |
 | Q&A | 10 | Defend every decision under expert questioning |
 
-**Total: 100. You need ~90+ across all components. You cannot tank any single one.**
 
 ---
 
-## The Architecture: What You're Building
+## The Architecture
 
 ```
 F1 Strategic Intelligence API
-├── Core CRUD layer (satisfies minimum requirements)
+├── Core CRUD layer 
 │ ├── Drivers
 │ ├── Circuits
 │ ├── Races
 │ └── PitStops
 │
-├── Intelligence Layer (this is what scores 90+)
+├── Intelligence Layer
 │ ├── Optimal Pit Window Calculator
 │ ├── Undercut/Overcut Opportunity Detector
 │ ├── Tyre Degradation Modeller
@@ -46,14 +42,14 @@ F1 Strategic Intelligence API
 
 ---
 
-## Tech Stack — Chosen for Defensibility and Impressiveness
+## Tech Stack 
 
-| Component | Choice | Why It Scores Higher |
+| Component | Choice | Justification |
 |---|---|---|
-| Framework | **FastAPI** | Async-native, auto-generates OpenAPI docs, modern — signals active choice over Django |
+| Framework | **FastAPI** | Async-native, auto-generates OpenAPI docs, modern —  active choice over Django |
 | Database | **PostgreSQL** | SQL required, relational integrity, indexing strategies |
 | ORM | **SQLAlchemy 2.0** (async) | State-of-the-art, async sessions, typed |
-| Data Seeding | **FastF1 + Ergast** | FastF1 is what real F1 engineers use — legitimises your domain |
+| Data Seeding | **FastF1 + Ergast** | FastF1 is what real F1 engineers use |
 | Auth | **JWT via python-jose + passlib** | Industry standard, demonstrable RBAC |
 | Validation | **Pydantic v2** | Built into FastAPI, strict typing, custom validators |
 | Testing | **Pytest + HTTPX AsyncClient** | Async testing, proper integration tests |
@@ -67,7 +63,7 @@ F1 Strategic Intelligence API
 
 ## Complete Endpoint Design
 
-### CRUD Layer (Minimum Requirement — but done properly)
+### CRUD Layer
 
 ```
 POST   /api/v1/drivers              Create driver
@@ -88,7 +84,7 @@ PUT    /api/v1/pitstops/{id}        Update pit stop record
 DELETE /api/v1/pitstops/{id}        Delete pit stop
 ```
 
-### Intelligence Endpoints (This is where you score 90+)
+### Intelligence Endpoints
 
 ```
 GET /api/v1/strategy/optimal-pit-window/{race_id}/{driver_id}
@@ -127,7 +123,7 @@ GET /api/v1/predict/race-strategy/{circuit_id}
 
 ---
 
-## Database Schema (Normalised — Marks the Architecture Criterion)
+## Database Schema (Normalised)
 
 ```sql
 -- Core tables
@@ -159,7 +155,7 @@ weather_snapshots (id, race_id, temperature_c, humidity_pct,
 
 ---
 
-## The Algorithms You'll Implement (Make These Your Own)
+## The Algorithms You'll Implement
 
 ### 1. Constructor Elo Rating
 Adapt standard Elo but use *points scored vs expected points* as the performance metric rather than win/loss. K-factor varies by race importance (title decider races weight more). This is defensible, original, and analytically interesting.
@@ -229,37 +225,7 @@ f1-strategy-api/
 
 This layered architecture (Router → Service → Repository → Model) is a professional pattern you can name and defend: it's the **Repository Pattern with Service Layer**.
 
----
-
-## Version Control Strategy (6 marks — don't waste them)
-
-Commit structure that signals maturity:
-
-```
-feat: initialise FastAPI project with async SQLAlchemy
-feat: implement driver CRUD with Pydantic v2 validation
-feat: add JWT authentication with role-based access control
-feat: seed database from Ergast API
-feat: implement Constructor Elo rating engine
-feat: add optimal pit window calculator
-feat: integrate OpenWeatherMap for wet weather scoring
-feat: add rate limiting via slowapi
-test: add integration tests for strategy endpoints
-docs: generate Swagger PDF documentation
-ci: add GitHub Actions test pipeline
-fix: handle edge case where driver has no wet race data
-refactor: extract tyre model into dedicated service class
-```
-
-**Conventional commits** format (`feat:`, `fix:`, `docs:`, `test:`) signals you know professional git workflows. Aim for 25–35 commits across 2–3 weeks.
-
----
-
 ## GenAI Usage Strategy (6 marks — this is where most students leave marks)
-
-The marking scheme says 90+ requires: *"exploring high-level alternatives and reimagining the design of cutting-edge solutions."*
-
-This means your GenAI declaration needs to show you did this:
 
 **Conversation 1:** Ask AI to propose three different architectural patterns for the API (Repository Pattern vs Active Record vs CQRS) and critically evaluate which suits this project — then explain why you rejected CQRS as overengineered.
 
@@ -341,6 +307,4 @@ Every endpoint in your intelligence layer must have a **documented mathematical 
 That is what "genuine research curiosity" and "publication-quality documentation" looks like to an examiner. Nobody else will do this.
 
 ---
-
-Want me to start generating the actual code for any specific component? I'd suggest starting with the project scaffold and database models.
 ## BUILD UI TO INTERACT WITH API
