@@ -4,6 +4,7 @@ from app.routers import drivers, races, pitstops, strategy, analytics, auth
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
+import app.models  # ensures all models are registered with Base
 
 limiter = Limiter(key_func=get_remote_address)
 
