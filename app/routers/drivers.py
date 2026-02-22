@@ -4,11 +4,12 @@ from app.database import get_db
 from app.repositories.driver_repo import DriverRepository
 from app.schemas.driver import DriverCreate, DriverUpdate, DriverResponse
 from typing import List
+from app.middleware.auth import get_current_user, require_admin
 
 router = APIRouter()
 
 @router.post("/", response_model=DriverResponse, status_code=201)
-async def create_driver(data: DriverCreate, db: AsyncSession = Depends(get_db)):
+async def create_driver(data: DriverCreate, db: AsyncSession = Depends(get_db), current_user: dict = Depends(get_current_user)):
     repo = DriverRepository(db)
     return await repo.create(data)
 
@@ -46,7 +47,11 @@ async def update_driver(driver_id: int, data: DriverUpdate, db: AsyncSession = D
     return driver
 
 @router.delete("/{driver_id}", status_code=204)
-async def delete_driver(driver_id: int, db: AsyncSession = Depends(get_db)):
+async def delete_driver(
+    driver_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user: dict = Depends(require_admin)  # 👈 admin only
+):
     repo = DriverRepository(db)
     deleted = await repo.delete(driver_id)
     if not deleted:

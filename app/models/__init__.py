@@ -7,3 +7,4 @@ from app.models.pitstop import PitStop
 from app.models.elo import ConstructorElo
 from app.models.weather import WeatherSnapshot
 from app.models.stint import TyreStint
+from app.models.user import User
