@@ -53,7 +53,7 @@ async def calculate_pit_window(
         .where(Result.race_id == race_id)
         .where(Result.driver_id == driver_id)
     )
-    result = driver_result.scalar_one_or_none()
+    result = driver_result.scalars().first()
     total_laps = result.laps if result and result.laps else 50
 
     # Compound degradation rates (laps before significant degradation)
