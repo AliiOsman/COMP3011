@@ -5,10 +5,26 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 import app.models  # ensures all models are registered with Base
+from contextlib import asynccontextmanager
 
 limiter = Limiter(key_func=get_remote_address)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        print("✅ Database connected and tables created")
+    except Exception as e:
+        print(f"⚠️ Database connection failed: {e}")
+
+    yield  # <-- app runs here
+
+    # Optional shutdown section (not required now)
+
 app = FastAPI(
+    lifespan=lifespan,
     title="F1 Strategic Intelligence API",
     description="A professional API for F1 race strategy analysis and prediction",
     version="1.0.0",
@@ -25,15 +41,6 @@ app.include_router(races.router, prefix="/api/v1/races", tags=["Races"])
 app.include_router(pitstops.router, prefix="/api/v1/pitstops", tags=["Pit Stops"])
 app.include_router(strategy.router, prefix="/api/v1/strategy", tags=["Strategy Intelligence"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["Analytics"])
-
-@app.on_event("startup")
-async def startup():
-    try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        print("✅ Database connected and tables created")
-    except Exception as e:
-        print(f"⚠️ Database connection failed: {e}")
 
 @app.get("/")
 async def root():

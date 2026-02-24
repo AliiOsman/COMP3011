@@ -107,5 +107,15 @@ async def calculate_pit_window(
         "strategy_summary": (
             f"{'1-stop' if len(stints) <= 2 else '2-stop'} strategy detected. "
             f"Optimal pit window based on compound degradation models."
-        )
+        ),
+        "limitations": [
+            "Model uses historical tyre degradation patterns and does not account for live race events",
+            "Safety car periods significantly alter optimal pit windows and are not modelled",
+            "Weather changes mid-race affecting compound choice are not captured in retrospective analysis",
+            "Recommended as pre-race planning tool, not real-time decision support"
+        ],
+        "data_sources": [
+            "Kaggle F1 historical dataset (pit stop durations)",
+            "OpenF1 API (tyre stint compounds and tyre age)"
+        ]
     }

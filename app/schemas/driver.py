@@ -1,5 +1,6 @@
 from pydantic import BaseModel, field_validator
 from typing import Optional
+from pydantic import BaseModel, ConfigDict
 
 class DriverBase(BaseModel):
     forename: str
@@ -35,4 +36,4 @@ class DriverUpdate(BaseModel):
 class DriverResponse(DriverBase):
     id: int
 
-    model_config = {"from_attributes": True}
+model_config = ConfigDict(from_attributes=True)

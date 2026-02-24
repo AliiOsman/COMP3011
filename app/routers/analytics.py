@@ -14,13 +14,14 @@ router = APIRouter()
 
 @router.get("/pit-crew-performance")
 async def get_pit_crew_performance(
-    season: Optional[int] = Query(None, description="Filter by season"),
+    season: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db)
 ):
     """
     Ranks constructors by pit crew execution speed using statistical
-    analysis. Computes mean, minimum, and consistency score (inverse
-    of std deviation) across all pit stops.
+    analysis. Computes mean, minimum, and consistency score across
+    all pit stops. Standard deviation computed in Python for
+    database compatibility.
     """
     query = (
         select(
@@ -28,8 +29,7 @@ async def get_pit_crew_performance(
             Constructor.id,
             func.avg(PitStop.duration_seconds).label("avg_duration"),
             func.min(PitStop.duration_seconds).label("fastest_stop"),
-            func.count(PitStop.id).label("total_stops"),
-            func.stddev(PitStop.duration_seconds).label("std_deviation")
+            func.count(PitStop.id).label("total_stops")
         )
         .join(Result, Result.constructor_id == Constructor.id)
         .join(PitStop, (PitStop.race_id == Result.race_id) &
@@ -37,7 +37,9 @@ async def get_pit_crew_performance(
     )
 
     if season:
-        query = query.join(Race, Race.id == PitStop.race_id).where(Race.season == season)
+        query = query.join(Race, Race.id == PitStop.race_id).where(
+            Race.season == season
+        )
 
     query = (
         query
@@ -52,28 +54,58 @@ async def get_pit_crew_performance(
     result = await db.execute(query)
     rows = result.all()
 
+    # Fetch raw durations per constructor for std dev calculation in Python
+    rankings = []
+    for i, row in enumerate(rows):
+        # Get all durations for this constructor
+        durations_query = (
+            select(PitStop.duration_seconds)
+            .join(Result, (Result.race_id == PitStop.race_id) &
+                  (Result.driver_id == PitStop.driver_id))
+            .where(Result.constructor_id == row.id)
+            .where(PitStop.duration_seconds != None)
+            .where(PitStop.duration_seconds > 1)
+            .where(PitStop.duration_seconds < 60)
+        )
+        if season:
+            durations_query = durations_query.join(
+                Race, Race.id == PitStop.race_id
+            ).where(Race.season == season)
+
+        durations_result = await db.execute(durations_query)
+        durations = [d[0] for d in durations_result.all()]
+
+        # Calculate std dev in Python
+        if len(durations) > 1:
+            mean = sum(durations) / len(durations)
+            variance = sum((x - mean) ** 2 for x in durations) / len(durations)
+            std_dev = variance ** 0.5
+        else:
+            std_dev = 0.0
+
+        consistency_score = round(100 / (1 + std_dev), 2)
+
+        rankings.append({
+            "rank": i + 1,
+            "constructor": row.name,
+            "constructor_id": row.id,
+            "avg_stop_seconds": round(float(row.avg_duration), 3),
+            "fastest_stop_seconds": round(float(row.fastest_stop), 3),
+            "total_stops_analysed": row.total_stops,
+            "std_deviation_seconds": round(std_dev, 3),
+            "consistency_score": consistency_score
+        })
+
     return {
         "season_filter": season,
         "methodology": (
             "Consistency score = 100 / (1 + std_deviation). "
-            "Higher = more consistent pit stops."
+            "Higher = more consistent pit stops. "
+            "Std deviation computed across all valid pit stops per constructor."
         ),
-        "rankings": [
-            {
-                "rank": i + 1,
-                "constructor": row.name,
-                "constructor_id": row.id,
-                "avg_stop_seconds": round(float(row.avg_duration), 3),
-                "fastest_stop_seconds": round(float(row.fastest_stop), 3),
-                "total_stops_analysed": row.total_stops,
-                "consistency_score": round(
-                    100 / (1 + float(row.std_deviation or 1)), 2
-                )
-            }
-            for i, row in enumerate(rows)
-        ]
+        "rankings": rankings
     }
-
+    
 @router.get("/circuit-overtaking-difficulty")
 async def get_circuit_overtaking_difficulty(db: AsyncSession = Depends(get_db)):
     """
