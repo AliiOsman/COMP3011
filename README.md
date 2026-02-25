@@ -1,4 +1,7 @@
 # COMP3011
+## Live API
+Base URL:  https://comp3011-production.up.railway.app
+Documentation:   https://comp3011-production.up.railway.app/docs
 
 ---
 
