@@ -20,7 +20,12 @@ from app.models.weather import WeatherSnapshot
 from app.models.stint import TyreStint
 from app.config import settings
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+db_url = os.environ.get("DATABASE_URL", settings.DATABASE_URL)
+if db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+connect_args = {"ssl": "require"} if "rlwy.net" in db_url else {}
+engine = create_async_engine(db_url, echo=False, connect_args=connect_args)
 AsyncSessionLocal = async_sessionmaker(engine, expire_on_commit=False)
 DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
 
