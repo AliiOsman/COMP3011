@@ -49,7 +49,7 @@ app = FastAPI(
     },
     license_info={
         "name": "MIT"
-    }
+    },
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
