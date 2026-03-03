@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.database import get_db
@@ -9,11 +9,17 @@ from app.models.circuit import Circuit
 from app.models.race import Race
 from app.services.tyre_model import calculate_tyre_degradation
 from typing import Optional
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+
+limiter = Limiter(key_func=get_remote_address)
 
 router = APIRouter()
 
 @router.get("/pit-crew-performance")
+@limiter.limit("20/minute")
 async def get_pit_crew_performance(
+    request: Request,
     season: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db)
 ):
@@ -107,7 +113,8 @@ async def get_pit_crew_performance(
     }
     
 @router.get("/circuit-overtaking-difficulty")
-async def get_circuit_overtaking_difficulty(db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def get_circuit_overtaking_difficulty(request: Request, db: AsyncSession = Depends(get_db)):
     """
     Scores circuits by overtaking difficulty using mean position change
     between qualifying grid and race finish across all races at that circuit.
@@ -228,7 +235,9 @@ async def get_driver_season_summary(
     }
 
 @router.get("/head-to-head/{driver_a_id}/{driver_b_id}")
+@limiter.limit("10/minute")
 async def get_head_to_head(
+    request: Request
     driver_a_id: int,
     driver_b_id: int,
     season: Optional[int] = Query(None, description="Filter by season"),

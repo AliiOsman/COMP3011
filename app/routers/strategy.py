@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
 from app.services.pit_window import calculate_pit_window
 from app.services.elo_engine import compute_constructor_elo
 from app.services.wet_weather import calculate_wet_weather_scores
 from app.services.tyre_model import calculate_tyre_degradation
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
+limiter = Limiter(key_func=get_remote_address)
 router = APIRouter()
 
 @router.get("/pit-window/{race_id}/{driver_id}")
@@ -25,7 +28,8 @@ async def get_pit_window(
     return result
 
 @router.get("/constructor-elo")
-async def get_constructor_elo(db: AsyncSession = Depends(get_db)):
+@limiter.limit("10/minute")
+async def get_constructor_elo(request: Request, db: AsyncSession = Depends(get_db)):
     """
     Compute Elo ratings for all F1 constructors based on historical
     race results. Uses a round-robin pairwise comparison model with
@@ -43,7 +47,9 @@ async def get_wet_weather_scores(db: AsyncSession = Depends(get_db)):
     return await calculate_wet_weather_scores(db)
 
 @router.get("/tyre-model/{circuit_id}/{compound}")
+@limiter.limit("10/minute")
 async def get_tyre_model(
+    request: Request,
     circuit_id: int,
     compound: str,
     db: AsyncSession = Depends(get_db)

@@ -23,7 +23,8 @@ class Token(BaseModel):
     token_type: str
 
 @router.post("/register", status_code=201)
-async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
+@limiter.limit("5/minute")
+async def register(request: Request, data: UserCreate, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.username == data.username))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Username already exists")
