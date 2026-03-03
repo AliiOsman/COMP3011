@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "my-very-secret-key-for-COMP-3011-CW1"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
-
+    TESTING: bool = False
     model_config = {"env_file": ".env"}
 
 settings = Settings()

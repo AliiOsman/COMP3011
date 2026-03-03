@@ -10,7 +10,8 @@ from slowapi.errors import RateLimitExceeded
 import app.models  # ensures all models are registered with Base
 from contextlib import asynccontextmanager
 from app.routers import mcp
-limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"])
+from app.config import settings
+limiter = Limiter(key_func=get_remote_address, default_limits=["100/minute"], enabled=not settings.TESTING)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

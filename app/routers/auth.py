@@ -1,3 +1,8 @@
+import os
+
+REGISTER_LIMIT = "9999/minute" if os.environ.get("TESTING") == "true" else "5/minute"
+LOGIN_LIMIT = "9999/minute" if os.environ.get("TESTING") == "true" else "10/minute"
+
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +28,7 @@ class Token(BaseModel):
     token_type: str
 
 @router.post("/register", status_code=201)
-@limiter.limit("5/minute")
+@limiter.limit(REGISTER_LIMIT)
 async def register(request: Request, data: UserCreate, db: AsyncSession = Depends(get_db)):
     existing = await db.execute(select(User).where(User.username == data.username))
     if existing.scalar_one_or_none():
@@ -38,7 +43,7 @@ async def register(request: Request, data: UserCreate, db: AsyncSession = Depend
     return {"message": f"User '{data.username}' created with role '{data.role}'"}
 
 @router.post("/token", response_model=Token)
-@limiter.limit("10/minute")
+@limiter.limit(LOGIN_LIMIT)
 async def login(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),

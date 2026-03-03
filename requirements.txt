@@ -76,3 +76,5 @@ uvloop==0.22.1
 watchfiles==1.1.1
 websockets==13.1
 wrapt==2.1.1
+pytest-env==1.1.3
+
