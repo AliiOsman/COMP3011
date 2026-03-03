@@ -32,17 +32,6 @@ app = FastAPI(
     title="F1 Strategic Intelligence API",
     description="""
     A RESTful API providing Formula 1 race strategy intelligence and analytics.
-    
-    ## Features
-    - **CRUD Operations** for drivers, races, and pit stops
-    - **Strategy Intelligence** — pit window calculator, tyre degradation models
-    - **Constructor Elo Ratings** — pairwise Elo system across all race results  
-    - **Wet Weather Scoring** — normalised driver performance in wet conditions
-    - **Pit Crew Analytics** — constructor pit stop performance rankings
-    - **MCP Compatible** — structured for AI agent tool integration
-    
-    ## Authentication
-    Use JWT Bearer tokens. Register at `/api/v1/auth/register`, get token at `/api/v1/auth/token`.
     """,
     contact={
         "name": "F1 Strategy API",
@@ -96,4 +85,53 @@ async def add_request_id(request: Request, call_next):
 
 @app.get("/")
 async def root():
-    return {"message": "F1 Strategic Intelligence API", "version": "1.0.0", "docs": "/docs"}
+    return {
+        "name": "F1 Strategic Intelligence API",
+        "version": "1.0.0",
+        "description": "A RESTful API providing Formula 1 race strategy intelligence and analytics.",
+        "features": [
+            "CRUD Operations for drivers, races, and pit stops",
+            "Strategy Intelligence — pit window calculator, tyre degradation models",
+            "Constructor Elo Ratings — pairwise Elo system across all race results",
+            "Wet Weather Scoring — normalised driver performance in wet conditions",
+            "Pit Crew Analytics — constructor pit stop performance rankings",
+            "Head-to-Head Rivalry Analyser — direct driver comparison across shared races",
+            "MCP Compatible — structured for AI agent tool integration"
+        ],
+        "authentication": {
+            "type": "JWT Bearer Token",
+            "register": "/api/v1/auth/register",
+            "login": "/api/v1/auth/token",
+            "usage": "Include header: Authorization: Bearer <token>"
+        },
+        "endpoints": {
+            "drivers": "/api/v1/drivers/",
+            "races": "/api/v1/races/",
+            "pitstops": "/api/v1/pitstops/",
+            "strategy": {
+                "pit_window": "/api/v1/strategy/pit-window/{race_id}/{driver_id}",
+                "constructor_elo": "/api/v1/strategy/constructor-elo",
+                "wet_weather": "/api/v1/strategy/wet-weather-scores",
+                "tyre_model": "/api/v1/strategy/tyre-model/{circuit_id}/{compound}"
+            },
+            "analytics": {
+                "pit_crew": "/api/v1/analytics/pit-crew-performance",
+                "overtaking": "/api/v1/analytics/circuit-overtaking-difficulty",
+                "driver_season": "/api/v1/analytics/driver-season-summary/{driver_id}",
+                "head_to_head": "/api/v1/analytics/head-to-head/{driver_a_id}/{driver_b_id}",
+                "tyre_degradation": "/api/v1/analytics/tyre-degradation"
+            },
+            "mcp": {
+                "manifest": "/mcp/manifest",
+                "health": "/mcp/health"
+            },
+            "docs": "/docs"
+        },
+        "data_sources": [
+            "Kaggle F1 Historical Dataset (1950-2023)",
+            "Jolpica/Ergast API (2024 season)",
+            "OpenF1 API (live tyre and weather data 2023-2024)"
+        ],
+        "mcp_compatible": True,
+        "status": "operational"
+    }
