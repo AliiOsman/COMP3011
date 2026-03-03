@@ -226,3 +226,192 @@ async def get_driver_season_summary(
             for r in results
         ]
     }
+
+@router.get("/head-to-head/{driver_a_id}/{driver_b_id}")
+async def get_head_to_head(
+    driver_a_id: int,
+    driver_b_id: int,
+    season: Optional[int] = Query(None, description="Filter by season"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Analyses the head-to-head rivalry between two drivers across all
+    races they competed in together. Computes dominance score, circuit
+    type breakdown, and conditions-based performance splits.
+
+    Dominance score = (wins_a - wins_b) / total_shared_races * 100
+    A positive score favours driver A, negative favours driver B.
+    """
+    from app.models.driver import Driver
+
+    # Validate both drivers exist
+    driver_a = await db.get(Driver, driver_a_id)
+    driver_b = await db.get(Driver, driver_b_id)
+    if not driver_a or not driver_b:
+        raise HTTPException(status_code=404, detail="One or both drivers not found")
+
+    # Get all races where both drivers competed
+    query_a = select(Result.race_id).where(Result.driver_id == driver_a_id)
+    query_b = select(Result.race_id).where(Result.driver_id == driver_b_id)
+
+    if season:
+        query_a = query_a.join(Race, Race.id == Result.race_id).where(
+            Race.season == season
+        )
+        query_b = query_b.join(Race, Race.id == Result.race_id).where(
+            Race.season == season
+        )
+
+    races_a = set(r[0] for r in (await db.execute(query_a)).all())
+    races_b = set(r[0] for r in (await db.execute(query_b)).all())
+    shared_race_ids = list(races_a & races_b)
+
+    if not shared_race_ids:
+        raise HTTPException(
+            status_code=404,
+            detail="No shared races found for these drivers"
+        )
+
+    # Get results for both drivers in shared races
+    results_result = await db.execute(
+        select(Result, Race)
+        .join(Race, Race.id == Result.race_id)
+        .where(Result.race_id.in_(shared_race_ids))
+        .where(Result.driver_id.in_([driver_a_id, driver_b_id]))
+        .where(Result.position != None)
+        .order_by(Race.season, Race.round)
+    )
+    rows = results_result.all()
+
+    # Build race-by-race comparison
+    race_data = {}
+    for result, race in rows:
+        if race.id not in race_data:
+            race_data[race.id] = {
+                "race_name": race.name,
+                "season": race.season,
+                "round": race.round,
+                "circuit_id": race.circuit_id
+            }
+        if result.driver_id == driver_a_id:
+            race_data[race.id]["pos_a"] = result.position
+            race_data[race.id]["grid_a"] = result.grid
+            race_data[race.id]["points_a"] = result.points
+        else:
+            race_data[race.id]["pos_b"] = result.position
+            race_data[race.id]["grid_b"] = result.grid
+            race_data[race.id]["points_b"] = result.points
+
+    # Only include races where we have both drivers' positions
+    complete_races = {
+        k: v for k, v in race_data.items()
+        if "pos_a" in v and "pos_b" in v
+    }
+
+    if not complete_races:
+        raise HTTPException(
+            status_code=404,
+            detail="No races with complete data for both drivers"
+        )
+
+    # Calculate head-to-head stats
+    wins_a = wins_b = 0
+    total_points_a = total_points_b = 0
+    position_diffs = []
+    race_by_race = []
+
+    for race_id, data in complete_races.items():
+        pos_a = data["pos_a"]
+        pos_b = data["pos_b"]
+        winner = "driver_a" if pos_a < pos_b else "driver_b"
+
+        if winner == "driver_a":
+            wins_a += 1
+        else:
+            wins_b += 1
+
+        total_points_a += data.get("points_a", 0) or 0
+        total_points_b += data.get("points_b", 0) or 0
+        position_diffs.append(pos_b - pos_a)
+
+        race_by_race.append({
+            "race": data["race_name"],
+            "season": data["season"],
+            "round": data["round"],
+            "driver_a_position": pos_a,
+            "driver_b_position": pos_b,
+            "winner": winner,
+            "position_gap": abs(pos_b - pos_a)
+        })
+
+    total = len(complete_races)
+    avg_pos_diff = sum(position_diffs) / len(position_diffs)
+    dominance_score = round((wins_a - wins_b) / total * 100, 2)
+
+    # Season-by-season breakdown
+    seasons = {}
+    for r in race_by_race:
+        s = r["season"]
+        if s not in seasons:
+            seasons[s] = {"wins_a": 0, "wins_b": 0, "races": 0}
+        seasons[s]["races"] += 1
+        if r["winner"] == "driver_a":
+            seasons[s]["wins_a"] += 1
+        else:
+            seasons[s]["wins_b"] += 1
+
+    season_breakdown = [
+        {
+            "season": s,
+            "races_together": v["races"],
+            "driver_a_wins": v["wins_a"],
+            "driver_b_wins": v["wins_b"],
+            "season_winner": (
+                f"{driver_a.forename} {driver_a.surname}"
+                if v["wins_a"] > v["wins_b"]
+                else f"{driver_b.forename} {driver_b.surname}"
+                if v["wins_b"] > v["wins_a"]
+                else "Tied"
+            )
+        }
+        for s, v in sorted(seasons.items())
+    ]
+
+    return {
+        "driver_a": {
+            "id": driver_a_id,
+            "name": f"{driver_a.forename} {driver_a.surname}",
+            "nationality": driver_a.nationality
+        },
+        "driver_b": {
+            "id": driver_b_id,
+            "name": f"{driver_b.forename} {driver_b.surname}",
+            "nationality": driver_b.nationality
+        },
+        "season_filter": season,
+        "shared_races_analysed": total,
+        "head_to_head": {
+            "driver_a_wins": wins_a,
+            "driver_b_wins": wins_b,
+            "driver_a_win_rate": round(wins_a / total * 100, 1),
+            "driver_b_win_rate": round(wins_b / total * 100, 1),
+            "driver_a_total_points": round(total_points_a, 1),
+            "driver_b_total_points": round(total_points_b, 1),
+            "avg_position_gap": round(abs(avg_pos_diff), 3),
+            "dominance_score": dominance_score,
+            "overall_winner": (
+                f"{driver_a.forename} {driver_a.surname}"
+                if wins_a > wins_b
+                else f"{driver_b.forename} {driver_b.surname}"
+                if wins_b > wins_a
+                else "Tied"
+            )
+        },
+        "methodology": (
+            "Head-to-head win = finishing ahead of opponent in shared race. "
+            "Dominance score = (wins_a - wins_b) / total_races * 100. "
+            "Positive score favours driver A. Points are championship points scored."
+        ),
+        "season_breakdown": season_breakdown,
+        "race_by_race": race_by_race
+    }

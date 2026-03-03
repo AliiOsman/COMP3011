@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -6,8 +6,12 @@ from app.database import get_db
 from app.models.user import User
 from app.middleware.auth import hash_password, verify_password, create_access_token
 from pydantic import BaseModel
+from slowapi import Limiter
+from slowapi.util import get_remote_address
 
 router = APIRouter()
+limiter = Limiter(key_func=get_remote_address)
+
 
 class UserCreate(BaseModel):
     username: str
@@ -33,7 +37,9 @@ async def register(data: UserCreate, db: AsyncSession = Depends(get_db)):
     return {"message": f"User '{data.username}' created with role '{data.role}'"}
 
 @router.post("/token", response_model=Token)
+@limiter.limit("10/minute")
 async def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
