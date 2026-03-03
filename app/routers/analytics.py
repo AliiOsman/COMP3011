@@ -237,7 +237,7 @@ async def get_driver_season_summary(
 @router.get("/head-to-head/{driver_a_id}/{driver_b_id}")
 @limiter.limit("10/minute")
 async def get_head_to_head(
-    request: Request
+    request: Request,
     driver_a_id: int,
     driver_b_id: int,
     season: Optional[int] = Query(None, description="Filter by season"),
