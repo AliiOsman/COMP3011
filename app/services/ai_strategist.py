@@ -91,49 +91,68 @@ Be concise, specific, and always reference the Elo rating in your assessment."""
 
     async with httpx.AsyncClient(timeout=60) as client:
 
-        # Try Anthropic Claude first if API key is set (production)
-        anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
-        if anthropic_key:
+        # Try Gemini first (free, works on Railway)
+        gemini_key = os.environ.get("GEMINI_API_KEY")
+        if gemini_key:
             try:
                 response = await client.post(
-                    "https://api.anthropic.com/v1/messages",
-                    headers={
-                        "x-api-key": anthropic_key,
-                        "anthropic-version": "2023-06-01",
-                        "content-type": "application/json"
-                    },
+                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_key}",
+                    headers={"content-type": "application/json"},
                     json={
-                        "model": "claude-haiku-4-5-20251001",
-                        "max_tokens": 1000,
-                        "messages": [{"role": "user", "content": prompt}]
+                        "contents": [
+                            {"parts": [{"text": prompt}]}
+                        ],
+                        "generationConfig": {
+                            "maxOutputTokens": 1000,
+                            "temperature": 0.7
+                        }
                     }
                 )
-                ai_response = response.json()["content"][0]["text"]
-                model_used = "claude-haiku-4-5 (Anthropic)"
+                data = response.json()
+                ai_response = data["candidates"][0]["content"]["parts"][0]["text"]
+                model_used = "gemini-2.0-flash (Google AI)"
             except Exception as e:
-                ai_response = None  # Fall through to Ollama
+                ai_response = None
 
-        # Fall back to local Ollama (development / demo)
+        # Try Anthropic Claude (production fallback)
+        if not ai_response:
+            anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
+            if anthropic_key:
+                try:
+                    response = await client.post(
+                        "https://api.anthropic.com/v1/messages",
+                        headers={
+                            "x-api-key": anthropic_key,
+                            "anthropic-version": "2023-06-01",
+                            "content-type": "application/json"
+                        },
+                        json={
+                            "model": "claude-haiku-4-5-20251001",
+                            "max_tokens": 1000,
+                            "messages": [{"role": "user", "content": prompt}]
+                        }
+                    )
+                    ai_response = response.json()["content"][0]["text"]
+                    model_used = "claude-haiku-4-5 (Anthropic)"
+                except Exception as e:
+                    ai_response = None
+
+        # Fall back to local Ollama (development only)
         if not ai_response:
             try:
                 response = await client.post(
                     "http://localhost:11434/api/generate",
                     json={
-                        "model": "llama3.2",
+                        "model": "llama3.2:1b",
                         "prompt": prompt,
                         "stream": False
                     }
                 )
                 ai_response = response.json()["response"]
-                model_used = "llama3.2 (Ollama local)"
+                model_used = "llama3.2:1b (Ollama local)"
             except Exception as e:
-                ai_response = (
-                    f"AI analysis unavailable. Ensure Ollama is running "
-                    f"('ollama serve') or set ANTHROPIC_API_KEY for production. "
-                    f"Error: {str(e)}"
-                )
+                ai_response = None
                 model_used = "unavailable"
-
     return {
         "constructor": constructor_name,
         "circuit": circuit_name,
