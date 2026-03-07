@@ -11,6 +11,8 @@ from app.services.tyre_model import calculate_tyre_degradation
 from typing import Optional
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from app.services.ai_strategist import get_ai_strategy_recommendation
+from app.models.driver import Driver
 
 limiter = Limiter(key_func=get_remote_address)
 
@@ -251,8 +253,6 @@ async def get_head_to_head(
     Dominance score = (wins_a - wins_b) / total_shared_races * 100
     A positive score favours driver A, negative favours driver B.
     """
-    from app.models.driver import Driver
-
     # Validate both drivers exist
     driver_a = await db.get(Driver, driver_a_id)
     driver_b = await db.get(Driver, driver_b_id)
@@ -424,3 +424,39 @@ async def get_head_to_head(
         "season_breakdown": season_breakdown,
         "race_by_race": race_by_race
     }
+
+@router.get("/ai-strategy/{constructor_name}/{circuit_name}")
+async def get_ai_strategy(
+    constructor_name: str,
+    circuit_name: str,
+    circuit_id: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    AI-powered 2026 regulation strategy advisor.
+
+    Combines historical F1 performance data (Elo ratings, wet weather
+    scores, pit crew analytics) with local LLaMA AI to generate
+    2026 regulation-aware strategic recommendations.
+
+    No 2026 data exists anywhere — this endpoint bridges that gap
+    by reasoning over historical constructor performance alongside
+    the known 2026 regulation changes (active aero, 50/50 power split,
+    MGU-H removal) to produce novel pre-season strategic insight.
+
+    Powered by LLaMA 3.2 (Ollama) locally, Claude (Anthropic) in production.
+    """
+    result = await get_ai_strategy_recommendation(
+        session=db,
+        constructor_name=constructor_name,
+        circuit_name=circuit_name,
+        circuit_id=circuit_id or 0
+    )
+
+    if result["model_used"] == "unavailable":
+        raise HTTPException(
+            status_code=503,
+            detail="AI service unavailable. Run 'ollama serve' locally or set ANTHROPIC_API_KEY."
+        )
+
+    return result
