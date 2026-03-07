@@ -90,69 +90,29 @@ Be concise, specific, and always reference the Elo rating in your assessment."""
     model_used = None
 
     async with httpx.AsyncClient(timeout=60) as client:
-
-        # Try Gemini first (free, works on Railway)
-        gemini_key = os.environ.get("GEMINI_API_KEY")
-        if gemini_key:
+        groq_key = os.environ.get("GROQ_API_KEY")
+        if groq_key:
             try:
                 response = await client.post(
-                    f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_key}",
-                    headers={"content-type": "application/json"},
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={
+                        "Authorization": f"Bearer {groq_key}",
+                        "Content-Type": "application/json"
+                    },
                     json={
-                        "contents": [
-                            {"parts": [{"text": prompt}]}
-                        ],
-                        "generationConfig": {
-                            "maxOutputTokens": 1000,
-                            "temperature": 0.7
-                        }
+                        "model": "llama-3.1-8b-instant",
+                        "messages": [{"role": "user", "content": prompt}],
+                        "max_tokens": 1000
                     }
                 )
-                data = response.json()
-                ai_response = data["candidates"][0]["content"]["parts"][0]["text"]
-                model_used = "gemini-2.0-flash (Google AI)"
+                ai_response = response.json()["choices"][0]["message"]["content"]
+                model_used = "llama-3.1-8b-instant (Groq)"
             except Exception as e:
-                ai_response = None
-
-        # Try Anthropic Claude (production fallback)
-        if not ai_response:
-            anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
-            if anthropic_key:
-                try:
-                    response = await client.post(
-                        "https://api.anthropic.com/v1/messages",
-                        headers={
-                            "x-api-key": anthropic_key,
-                            "anthropic-version": "2023-06-01",
-                            "content-type": "application/json"
-                        },
-                        json={
-                            "model": "claude-haiku-4-5-20251001",
-                            "max_tokens": 1000,
-                            "messages": [{"role": "user", "content": prompt}]
-                        }
-                    )
-                    ai_response = response.json()["content"][0]["text"]
-                    model_used = "claude-haiku-4-5 (Anthropic)"
-                except Exception as e:
-                    ai_response = None
-
-        # Fall back to local Ollama (development only)
-        if not ai_response:
-            try:
-                response = await client.post(
-                    "http://localhost:11434/api/generate",
-                    json={
-                        "model": "llama3.2:1b",
-                        "prompt": prompt,
-                        "stream": False
-                    }
-                )
-                ai_response = response.json()["response"]
-                model_used = "llama3.2:1b (Ollama local)"
-            except Exception as e:
-                ai_response = None
                 model_used = "unavailable"
+                ai_response = None
+
+        if not ai_response:
+            model_used = "unavailable"
     return {
         "constructor": constructor_name,
         "circuit": circuit_name,
