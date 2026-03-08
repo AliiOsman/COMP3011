@@ -1,3 +1,6 @@
+pydantic==2.10.6
+pydantic-core==2.27.2
+pydantic-settings==2.7.1
 aiosqlite==0.20.0
 alembic==1.14.0
 annotated-doc==0.0.4
@@ -43,9 +46,6 @@ platformdirs==4.9.2
 pluggy==1.6.0
 pyasn1==0.6.2
 pycparser==3.0
-pydantic==2.10.0
-pydantic-settings==2.7.0
-pydantic_core==2.27.0
 pyparsing==3.3.2
 pytest==8.3.0
 pytest-asyncio==0.24.0
