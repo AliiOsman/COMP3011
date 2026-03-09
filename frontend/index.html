@@ -5,889 +5,500 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F1 Strategic Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080808;
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --border: #222222;
-    --border2: #2a2a2a;
-    --red: #e8002d;
-    --red-dim: rgba(232,0,45,0.12);
-    --white: #f0f0f0;
-    --muted: #555555;
-    --text: #cccccc;
-    --mono: 'DM Mono', monospace;
-    --sans: 'DM Sans', sans-serif;
-    --display: 'Bebas Neue', sans-serif;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── HEADER ── */
-  header {
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    background: rgba(8,8,8,0.95);
-    backdrop-filter: blur(12px);
-    z-index: 100;
-  }
-
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .logo-mark {
-    width: 28px;
-    height: 28px;
-    background: var(--red);
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
-    flex-shrink: 0;
-  }
-
-  .logo-text {
-    font-family: var(--display);
-    font-size: 1.3rem;
-    letter-spacing: 0.08em;
-    color: var(--white);
-  }
-
-  .logo-sub {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-
-  .status-pill {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-  }
-
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #00c853;
-    animation: pulse 2s infinite;
-  }
-
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-
-  /* ── NAV TABS ── */
-  nav {
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    gap: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    background: var(--surface);
-  }
-
-  nav::-webkit-scrollbar { display: none; }
-
-  .tab {
-    padding: 0.75rem 1.25rem;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    white-space: nowrap;
-    transition: all 0.15s;
-    background: none;
-    border-top: none;
-    border-left: none;
-    border-right: none;
-  }
-
-  .tab:hover { color: var(--text); }
-  .tab.active {
-    color: var(--white);
-    border-bottom-color: var(--red);
-  }
-
-  /* ── LAYOUT ── */
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  /* ── PAGE HEADER ── */
-  .page-header {
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.4s ease forwards;
-  }
-
-  .page-header h1 {
-    font-family: var(--display);
-    font-size: 2.5rem;
-    letter-spacing: 0.05em;
-    color: var(--white);
-    line-height: 1;
-    margin-bottom: 0.4rem;
-  }
-
-  .page-header p {
-    font-size: 0.8rem;
-    color: var(--muted);
-    font-family: var(--mono);
-    letter-spacing: 0.08em;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ── CARDS ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.4s ease forwards;
-  }
-
-  .card-label {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .card-label::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* ── GRID ── */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-
-  @media (max-width: 768px) {
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  }
-
-  /* ── FORM CONTROLS ── */
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1rem;
-  }
-
-  label {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  input, select {
-    background: var(--bg);
-    border: 1px solid var(--border2);
-    color: var(--white);
-    padding: 0.6rem 0.8rem;
-    font-family: var(--mono);
-    font-size: 0.8rem;
-    border-radius: 2px;
-    outline: none;
-    transition: border-color 0.15s;
-    width: 100%;
-  }
-
-  input:focus, select:focus { border-color: var(--red); }
-
-  select option { background: var(--surface2); }
-
-  .btn {
-    background: var(--red);
-    color: white;
-    border: none;
-    padding: 0.65rem 1.5rem;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    cursor: pointer;
-    border-radius: 2px;
-    transition: all 0.15s;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .btn:hover { background: #ff1a3e; transform: translateY(-1px); }
-  .btn:active { transform: translateY(0); }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border2);
-    color: var(--text);
-  }
-  .btn-ghost:hover { background: var(--surface2); border-color: var(--muted); }
-
-  /* ── LOADING ── */
-  .loading {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--muted);
-    padding: 2rem 0;
-  }
-
-  .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--border2);
-    border-top-color: var(--red);
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
-
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── DATA TABLE ── */
-  .data-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.8rem;
-  }
-
-  .data-table th {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    text-align: left;
-    padding: 0.6rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .data-table td {
-    padding: 0.7rem 0.8rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 0.78rem;
-  }
-
-  .data-table tr:last-child td { border-bottom: none; }
-  .data-table tr:hover td { background: var(--surface2); }
-
-  /* ── ELO BAR ── */
-  .elo-bar-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .elo-bar {
-    height: 4px;
-    background: var(--border2);
-    border-radius: 2px;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .elo-fill {
-    height: 100%;
-    background: var(--red);
-    border-radius: 2px;
-    transition: width 0.8s ease;
-  }
-
-  .elo-val {
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--white);
-    min-width: 50px;
-    text-align: right;
-  }
-
-  .rank-badge {
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-
-  .rank-badge.top { border-color: var(--red); color: var(--red); }
-
-  /* ── STAT BLOCKS ── */
-  .stat-block {
-    padding: 1.2rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-  }
-
-  .stat-value {
-    font-family: var(--display);
-    font-size: 2rem;
-    color: var(--white);
-    line-height: 1;
-    margin-bottom: 0.3rem;
-  }
-
-  .stat-label {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ── RATING CHIP ── */
-  .rating {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 2px;
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.1em;
-    font-weight: 500;
-  }
-
-  .rating-Elite { background: rgba(232,0,45,0.2); color: #ff6b6b; border: 1px solid rgba(232,0,45,0.3); }
-  .rating-Strong { background: rgba(255,165,0,0.15); color: #ffaa44; border: 1px solid rgba(255,165,0,0.3); }
-  .rating-Average { background: rgba(100,200,100,0.12); color: #77cc77; border: 1px solid rgba(100,200,100,0.25); }
-  .rating-Weak { background: rgba(100,100,100,0.15); color: #888; border: 1px solid #333; }
-
-  /* ── AI OUTPUT ── */
-  .ai-output {
-    background: var(--bg);
-    border: 1px solid var(--border2);
-    border-left: 3px solid var(--red);
-    padding: 1.2rem 1.4rem;
-    font-size: 0.82rem;
-    line-height: 1.7;
-    color: var(--text);
-    border-radius: 0 2px 2px 0;
-    white-space: pre-wrap;
-    margin-top: 1rem;
-  }
-
-  .ai-meta {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    color: var(--muted);
-    margin-bottom: 0.8rem;
-  }
-
-  .ai-meta-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--red);
-  }
-
-  /* ── H2H ── */
-  .h2h-bar {
-    height: 8px;
-    background: var(--border2);
-    border-radius: 4px;
-    overflow: hidden;
-    margin: 0.8rem 0;
-    display: flex;
-  }
-
-  .h2h-a { background: var(--red); transition: width 0.8s ease; }
-  .h2h-b { background: #3a6ea8; transition: width 0.8s ease; }
-
-  .h2h-labels {
-    display: flex;
-    justify-content: space-between;
-    font-family: var(--mono);
-    font-size: 0.7rem;
-    color: var(--muted);
-  }
-
-  .h2h-winner {
-    font-family: var(--display);
-    font-size: 1.6rem;
-    color: var(--white);
-    letter-spacing: 0.05em;
-  }
-
-  .h2h-winner span { color: var(--red); }
-
-  /* ── ERROR ── */
-  .error-msg {
-    background: rgba(232,0,45,0.08);
-    border: 1px solid rgba(232,0,45,0.2);
-    color: #ff6b6b;
-    padding: 0.8rem 1rem;
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    border-radius: 2px;
-    margin-top: 1rem;
-  }
-
-  /* ── EMPTY ── */
-  .empty {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-  }
-
-  .empty-icon {
-    font-size: 2rem;
-    margin-bottom: 0.8rem;
-    opacity: 0.3;
-  }
-
-  /* ── SCROLLBAR ── */
-  ::-webkit-scrollbar { width: 4px; height: 4px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-
-  /* ── STAGGER ── */
-  .card:nth-child(1) { animation-delay: 0.05s; }
-  .card:nth-child(2) { animation-delay: 0.1s; }
-  .card:nth-child(3) { animation-delay: 0.15s; }
-  .card:nth-child(4) { animation-delay: 0.2s; }
-
-  /* ── HERO ── */
-  .hero {
-    padding: 3rem 0 2rem;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 2rem;
-    opacity: 0;
-    animation: fadeUp 0.5s ease forwards;
-  }
-
-  .hero-eyebrow {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--red);
-    margin-bottom: 0.8rem;
-  }
-
-  .hero h1 {
-    font-family: var(--display);
-    font-size: clamp(2.5rem, 6vw, 4.5rem);
-    letter-spacing: 0.04em;
-    color: var(--white);
-    line-height: 0.95;
-    margin-bottom: 1rem;
-  }
-
-  .hero h1 em {
-    font-style: normal;
-    color: var(--red);
-  }
-
-  .hero p {
-    font-size: 0.85rem;
-    color: var(--muted);
-    max-width: 500px;
-    line-height: 1.6;
-  }
-
-  .hero-stats {
-    display: flex;
-    gap: 2rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-  }
-
-  .hero-stat-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .hero-stat-num {
-    font-family: var(--display);
-    font-size: 1.8rem;
-    color: var(--white);
-    line-height: 1;
-  }
-
-  .hero-stat-lbl {
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  /* ── DIVIDER ── */
-  .divider {
-    height: 1px;
-    background: var(--border);
-    margin: 1.5rem 0;
-  }
-
-  /* ── INLINE FORM ── */
-  .inline-form {
-    display: flex;
-    gap: 0.75rem;
-    align-items: flex-end;
-    flex-wrap: wrap;
-  }
-
-  .inline-form .form-group {
-    margin-bottom: 0;
-    flex: 1;
-    min-width: 140px;
-  }
-
-  /* ── SECTION ROW ── */
-  .section-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-  }
-
-  .section-title {
-    font-family: var(--mono);
-    font-size: 0.65rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
+:root {
+  --bg: #f0f2f5;
+  --surface: #ffffff;
+  --surface2: #f7f8fa;
+  --surface3: #eef0f4;
+  --border: #e2e6ed;
+  --border2: #d0d5de;
+  --red: #e8002d;
+  --red-light: #fff0f3;
+  --red-mid: rgba(232,0,45,0.12);
+  --blue: #0066ff;
+  --blue-light: #e8f0ff;
+  --dark: #0d1117;
+  --dark2: #161b22;
+  --text: #1a1d23;
+  --text2: #4a5568;
+  --muted: #8a94a6;
+  --white: #ffffff;
+  --green: #00b341;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  --orbitron: 'Orbitron', sans-serif;
+  --inter: 'Inter', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:var(--bg); color:var(--text); font-family:var(--inter); min-height:100vh; overflow-x:hidden; }
+
+header {
+  background:var(--dark);
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 2rem;
+  position:sticky;
+  top:0;
+  z-index:200;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.logo { display:flex; align-items:center; gap:12px; }
+.logo-icon {
+  width:32px; height:32px;
+  background:var(--red);
+  clip-path:polygon(0 0,100% 0,100% 65%,65% 100%,0 100%);
+  position:relative; flex-shrink:0;
+}
+.logo-icon::after {
+  content:'';
+  position:absolute;
+  inset:3px;
+  background:var(--dark);
+  clip-path:polygon(0 0,100% 0,100% 60%,60% 100%,0 100%);
+}
+.logo-name { font-family:var(--orbitron); font-size:0.85rem; font-weight:700; color:#fff; letter-spacing:0.1em; }
+.logo-sub { font-family:var(--mono); font-size:0.55rem; color:rgba(255,255,255,0.3); letter-spacing:0.15em; margin-top:1px; }
+.api-badge {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(0,179,65,0.15); border:1px solid rgba(0,179,65,0.3);
+  border-radius:20px; padding:4px 10px;
+  font-family:var(--mono); font-size:0.6rem; color:var(--green); letter-spacing:0.1em;
+}
+.api-dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+nav {
+  background:var(--dark2);
+  border-bottom:1px solid rgba(255,255,255,0.05);
+  padding:0 2rem;
+  display:flex;
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+nav::-webkit-scrollbar { display:none; }
+.tab {
+  padding:0 1.4rem; height:44px;
+  font-family:var(--mono); font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase;
+  color:rgba(255,255,255,0.35); cursor:pointer; border:none; background:none;
+  white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.2s;
+  display:flex; align-items:center; gap:7px;
+}
+.tab:hover { color:rgba(255,255,255,0.7); }
+.tab.active { color:#fff; border-bottom-color:var(--red); }
+
+.container { max-width:1200px; margin:0 auto; padding:2rem; }
+.panel { display:none; }
+.panel.active { display:block; }
+
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.fade { opacity:0; animation:fadeUp 0.35s ease forwards; }
+.d1{animation-delay:0.05s} .d2{animation-delay:0.1s} .d3{animation-delay:0.15s} .d4{animation-delay:0.2s}
+
+.page-title { margin-bottom:1.5rem; opacity:0; animation:fadeUp 0.35s ease forwards; }
+.page-title h1 { font-family:var(--orbitron); font-size:1.5rem; font-weight:700; color:var(--dark); letter-spacing:0.05em; margin-bottom:4px; }
+.page-title p { font-family:var(--mono); font-size:0.68rem; color:var(--muted); }
+
+.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.25rem 1.5rem; box-shadow:var(--shadow); }
+.card-title {
+  font-family:var(--mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
+  color:var(--muted); display:flex; align-items:center; gap:8px;
+}
+.card-title::before { content:''; width:3px; height:12px; background:var(--red); border-radius:2px; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+@media(max-width:900px) { .grid-3{grid-template-columns:1fr 1fr} }
+@media(max-width:600px) { .grid-2,.grid-3{grid-template-columns:1fr} }
+
+.form-row { display:flex; gap:0.75rem; align-items:flex-end; flex-wrap:wrap; margin-bottom:1.2rem; }
+.form-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:140px; }
+label { font-family:var(--mono); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
+input, select {
+  background:var(--surface2); border:1.5px solid var(--border);
+  color:var(--text); padding:0.55rem 0.8rem;
+  font-family:var(--inter); font-size:0.82rem;
+  border-radius:6px; outline:none;
+  transition:border-color 0.15s,box-shadow 0.15s; width:100%;
+}
+input:focus, select:focus { border-color:var(--red); box-shadow:0 0 0 3px var(--red-mid); }
+
+.btn {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--red); color:#fff; border:none;
+  padding:0.58rem 1.4rem;
+  font-family:var(--orbitron); font-size:0.6rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
+  cursor:pointer; border-radius:6px; transition:all 0.15s; white-space:nowrap;
+}
+.btn:hover { background:#cc0026; transform:translateY(-1px); box-shadow:0 4px 12px rgba(232,0,45,0.3); }
+.btn:active { transform:translateY(0); }
+.btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn-sm { padding:0.4rem 0.9rem; font-size:0.55rem; }
+
+.loading { display:flex; align-items:center; gap:10px; padding:2.5rem; font-family:var(--mono); font-size:0.72rem; color:var(--muted); justify-content:center; }
+.spin { width:18px; height:18px; border:2px solid var(--border2); border-top-color:var(--red); border-radius:50%; animation:spin 0.6s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+
+.tbl { width:100%; border-collapse:collapse; font-size:0.82rem; }
+.tbl th { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0.5rem 0.9rem; border-bottom:2px solid var(--border); background:var(--surface2); }
+.tbl td { padding:0.75rem 0.9rem; border-bottom:1px solid var(--border); color:var(--text2); vertical-align:middle; }
+.tbl tr:last-child td { border-bottom:none; }
+.tbl tr:hover td { background:var(--surface2); }
+.tbl td.bold { color:var(--text); font-weight:600; }
+
+.rank { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:0.65rem; font-weight:600; background:var(--surface3); color:var(--muted); }
+.rank.gold { background:#fef3c7; color:#b45309; }
+.rank.silver { background:#f1f5f9; color:#475569; }
+.rank.bronze { background:#fef0e6; color:#c2410c; }
+
+.elo-bar { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; min-width:80px; }
+.elo-fill { height:100%; background:linear-gradient(90deg,var(--red),#ff6b6b); border-radius:3px; transition:width 1s cubic-bezier(0.16,1,0.3,1); }
+
+.chip { display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px; font-family:var(--mono); font-size:0.6rem; font-weight:600; letter-spacing:0.05em; }
+.chip-elite { background:#fee2e2; color:#991b1b; }
+.chip-strong { background:#fef3c7; color:#92400e; }
+.chip-average { background:#d1fae5; color:#065f46; }
+.chip-weak { background:var(--surface3); color:var(--muted); }
+
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.2rem; box-shadow:var(--shadow); }
+.stat-num { font-family:var(--orbitron); font-size:1.8rem; font-weight:700; color:var(--dark); line-height:1; margin-bottom:4px; }
+.stat-num.red { color:var(--red); }
+.stat-lbl { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+
+.ai-box {
+  background:var(--dark); border-radius:8px; padding:1.5rem;
+  color:rgba(255,255,255,0.85); font-size:0.83rem; line-height:1.8;
+  white-space:pre-wrap; font-family:var(--inter);
+  border-left:3px solid var(--red); position:relative; overflow:hidden;
+}
+.ai-box::before {
+  content:''; position:absolute; top:0; right:0;
+  width:200px; height:200px;
+  background:radial-gradient(circle,rgba(232,0,45,0.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.ai-tag {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--red-light); color:var(--red);
+  border:1px solid rgba(232,0,45,0.2); border-radius:20px;
+  padding:3px 10px; font-family:var(--mono); font-size:0.58rem;
+  letter-spacing:0.1em; margin-bottom:1rem; font-weight:600;
+}
+.ai-dot { width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.5s infinite; }
+
+.winner-banner {
+  background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 100%);
+  border-radius:8px; padding:1.5rem; text-align:center;
+  border:1px solid rgba(255,255,255,0.06);
+}
+.winner-label { font-family:var(--mono); font-size:0.6rem; color:rgba(255,255,255,0.3); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.5rem; }
+.winner-name { font-family:var(--orbitron); font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:0.05em; }
+.winner-name em { color:var(--red); font-style:normal; }
+
+.h2h-bar-track { height:10px; background:var(--surface3); border-radius:5px; overflow:hidden; display:flex; margin:0.8rem 0 0.4rem; }
+.h2h-seg-a { background:var(--red); transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
+.h2h-seg-b { background:#3b82f6; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
+.h2h-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.65rem; }
+
+.notice { border-radius:6px; padding:0.7rem 1rem; font-family:var(--mono); font-size:0.65rem; line-height:1.6; }
+.notice.warn { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
+.notice.info { background:var(--blue-light); border:1px solid #bfdbfe; color:#1e40af; }
+.notice.danger { background:var(--red-light); border:1px solid rgba(232,0,45,0.2); color:#991b1b; }
+
+.err { background:var(--red-light); border:1px solid rgba(232,0,45,0.2); color:#991b1b; border-radius:6px; padding:0.8rem 1rem; font-family:var(--mono); font-size:0.72rem; margin-top:0.5rem; }
+.empty { text-align:center; padding:3rem; color:var(--muted); font-family:var(--mono); font-size:0.72rem; }
+
+hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
+.tip { font-family:var(--mono); font-size:0.6rem; color:var(--muted); margin-top:0.5rem; }
+.tip a { color:var(--red); text-decoration:none; }
+.season-tag { background:var(--surface2); border:1px solid var(--border); color:var(--text2); border-radius:4px; padding:2px 7px; font-family:var(--mono); font-size:0.62rem; }
+
+/* HERO */
+.hero { background:var(--dark); border-radius:12px; padding:3rem; margin-bottom:1.5rem; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.05); }
+.hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(232,0,45,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,0,45,0.04) 1px,transparent 1px); background-size:40px 40px; }
+.hero-glow { position:absolute; top:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(232,0,45,0.12) 0%,transparent 70%); pointer-events:none; }
+.hero-content { position:relative; }
+.hero-eyebrow { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--red); margin-bottom:0.8rem; }
+.hero h1 { font-family:var(--orbitron); font-size:clamp(1.8rem,4vw,3rem); font-weight:900; color:#fff; line-height:1.05; letter-spacing:0.03em; margin-bottom:1rem; }
+.hero h1 span { color:var(--red); }
+.hero p { color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7; max-width:480px; }
+.hero-stats { display:flex; gap:2.5rem; margin-top:2rem; flex-wrap:wrap; }
+.hero-stat-num { font-family:var(--orbitron); font-size:1.5rem; font-weight:700; color:#fff; line-height:1; }
+.hero-stat-lbl { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:3px; }
+.hdiv { width:1px; background:rgba(255,255,255,0.08); align-self:stretch; }
+
+.feature-item { display:flex; align-items:flex-start; gap:10px; padding:0.9rem; background:var(--surface2); border-radius:8px; border:1px solid var(--border); transition:border-color 0.15s; }
+.feature-item:hover { border-color:var(--red); }
+.fdot { width:8px; height:8px; border-radius:50%; background:var(--red); margin-top:4px; flex-shrink:0; }
+.fname { font-size:0.8rem; font-weight:600; color:var(--text); margin-bottom:2px; }
+.fdesc { font-size:0.7rem; color:var(--muted); }
+
+::-webkit-scrollbar { width:5px; height:5px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <div class="logo-mark"></div>
+    <div class="logo-icon"></div>
     <div>
-      <div class="logo-text">F1 INTELLIGENCE</div>
-      <div class="logo-sub">Strategic Analysis Platform</div>
+      <div class="logo-name">F1 INTELLIGENCE</div>
+      <div class="logo-sub">Strategic Analysis Platform · 2026</div>
     </div>
   </div>
-  <div class="status-pill">
-    <div class="status-dot"></div>
-    API LIVE
-  </div>
+  <div class="api-badge"><div class="api-dot"></div>API LIVE</div>
 </header>
 
 <nav>
-  <button class="tab active" onclick="switchTab('overview')">Overview</button>
-  <button class="tab" onclick="switchTab('elo')">Constructor ELO</button>
-  <button class="tab" onclick="switchTab('wet')">Wet Weather</button>
-  <button class="tab" onclick="switchTab('h2h')">Head-to-Head</button>
-  <button class="tab" onclick="switchTab('pit')">Pit Window</button>
-  <button class="tab" onclick="switchTab('ai')">AI Advisor 2026</button>
+  <button class="tab active" onclick="switchTab('overview',this)">⬡ Overview</button>
+  <button class="tab" onclick="switchTab('elo',this)">◈ Constructor ELO</button>
+  <button class="tab" onclick="switchTab('wet',this)">◆ Wet Weather</button>
+  <button class="tab" onclick="switchTab('h2h',this)">⇄ Head-to-Head</button>
+  <button class="tab" onclick="switchTab('pit',this)">◎ Pit Window</button>
+  <button class="tab" onclick="switchTab('ai',this)">⚡ AI Advisor 2026</button>
 </nav>
 
-<!-- ══ OVERVIEW ══ -->
+<!-- OVERVIEW -->
 <div id="panel-overview" class="panel active">
   <div class="container">
-    <div class="hero">
-      <div class="hero-eyebrow">COMP3011 — University Project</div>
-      <h1>F1 STRATEGIC<br><em>INTELLIGENCE</em></h1>
-      <p>A RESTful API providing Formula 1 race strategy intelligence. Built with FastAPI, PostgreSQL, and real race data from 2018–2024.</p>
-      <div class="hero-stats" id="hero-stats">
-        <div class="hero-stat-item">
-          <div class="hero-stat-num" id="stat-races">—</div>
-          <div class="hero-stat-lbl">Races Analysed</div>
-        </div>
-        <div class="hero-stat-item">
-          <div class="hero-stat-num" id="stat-drivers">—</div>
-          <div class="hero-stat-lbl">Drivers</div>
-        </div>
-        <div class="hero-stat-item">
-          <div class="hero-stat-num" id="stat-constructors">—</div>
-          <div class="hero-stat-lbl">Constructors</div>
-        </div>
-        <div class="hero-stat-item">
-          <div class="hero-stat-num">7</div>
-          <div class="hero-stat-lbl">Seasons</div>
+    <div class="hero fade">
+      <div class="hero-grid"></div>
+      <div class="hero-glow"></div>
+      <div class="hero-content">
+        <div class="hero-eyebrow">COMP3011 · University of Leeds · 2026</div>
+        <h1>F1 STRATEGIC<br><span>INTELLIGENCE</span></h1>
+        <p>A RESTful API providing Formula 1 race strategy intelligence and analytics. Built with FastAPI, PostgreSQL, JWT authentication, and real race data.</p>
+        <div class="hero-stats">
+          <div><div class="hero-stat-num">149+</div><div class="hero-stat-lbl">Races</div></div>
+          <div class="hdiv"></div>
+          <div><div class="hero-stat-num">800+</div><div class="hero-stat-lbl">Drivers</div></div>
+          <div class="hdiv"></div>
+          <div><div class="hero-stat-num">2023–24</div><div class="hero-stat-lbl">Coverage</div></div>
+          <div class="hdiv"></div>
+          <div><div class="hero-stat-num" id="stat-api" style="font-size:0.85rem;color:rgba(255,255,255,0.35)">Checking...</div><div class="hero-stat-lbl">API Status</div></div>
         </div>
       </div>
     </div>
 
-    <div class="grid-3">
-      <div class="card" style="animation-delay:0.1s">
-        <div class="card-label">Data Sources</div>
-        <div style="display:flex;flex-direction:column;gap:0.7rem">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:0.8rem">Kaggle F1 Dataset</span>
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">1950–2023</span>
-          </div>
-          <div class="divider" style="margin:0"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:0.8rem">Jolpica / Ergast</span>
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">2024</span>
-          </div>
-          <div class="divider" style="margin:0"></div>
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <span style="font-size:0.8rem">OpenF1 API</span>
-            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">2023–2024</span>
+    <div class="grid-2" style="margin-bottom:1rem">
+      <div class="card fade d1">
+        <div class="card-title" style="margin-bottom:1rem">Intelligence Features</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
+          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Constructor ELO</div><div class="fdesc">Pairwise Elo across all results</div></div></div>
+          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Wet Weather</div><div class="fdesc">Normalised driver scoring</div></div></div>
+          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Head-to-Head</div><div class="fdesc">Direct rivalry analysis</div></div></div>
+          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Pit Window</div><div class="fdesc">Optimal stop calculator</div></div></div>
+          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Tyre Model</div><div class="fdesc">Degradation regression</div></div></div>
+          <div class="feature-item" style="border-color:rgba(232,0,45,0.3);background:var(--red-light)">
+            <div class="fdot"></div>
+            <div><div class="fname" style="color:var(--red)">AI Advisor 2026</div><div class="fdesc">LLaMA + regulation data</div></div>
           </div>
         </div>
       </div>
 
-      <div class="card" style="animation-delay:0.15s">
-        <div class="card-label">Intelligence Features</div>
-        <div style="display:flex;flex-direction:column;gap:0.6rem">
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Constructor Elo Engine</div>
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Wet Weather Scorer</div>
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Pit Window Calculator</div>
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Tyre Degradation Model</div>
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Head-to-Head Rivalry</div>
-          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> AI 2026 Reg Advisor</div>
-        </div>
-      </div>
-
-      <div class="card" style="animation-delay:0.2s">
-        <div class="card-label">Tech Stack</div>
-        <div style="display:flex;flex-direction:column;gap:0.6rem">
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">Framework</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">FastAPI</span>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">Database</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">PostgreSQL</span>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">ORM</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">SQLAlchemy async</span>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">Auth</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">JWT + Argon2</span>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">AI</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">Groq / LLaMA</span>
-          </div>
-          <div style="display:flex;justify-content:space-between">
-            <span style="font-size:0.8rem">Deployment</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">Render</span>
-          </div>
+      <div class="card fade d2">
+        <div class="card-title" style="margin-bottom:1rem">Tech Stack</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          ${[['Framework','FastAPI + Python 3.11'],['Database','PostgreSQL (asyncpg)'],['ORM','SQLAlchemy async'],['Auth','JWT Bearer + Argon2'],['AI Provider','Groq / LLaMA 3.1'],['Deployment','Render'],['Testing','pytest · 120 tests · 79% cov'],['Pattern','Repository + MCP Compatible']].map(([k,v])=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border)">
+            <span style="font-size:0.78rem;color:var(--text2)">${k}</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--text);font-weight:500">${v}</span>
+          </div>`).join('')}
         </div>
       </div>
     </div>
 
-    <div style="margin-top:1rem">
-      <div class="card" style="animation-delay:0.25s">
-        <div class="card-label">API Health Check</div>
-        <div id="health-output">
-          <div class="loading"><div class="spinner"></div>Connecting to API...</div>
+    <div class="card fade d3">
+      <div class="card-title" style="margin-bottom:1rem">Data Sources</div>
+      <div class="grid-3">
+        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">Kaggle F1 Dataset</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">Historical data 1950–2023. Results, pit stops, tyre stints, weather.</div>
         </div>
+        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">Jolpica / Ergast</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">2024 season race results and constructor standings.</div>
+        </div>
+        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">OpenF1 API</div>
+          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">Live tyre and weather telemetry for 2023–2024 seasons.</div>
+        </div>
+      </div>
+      <div class="notice info" style="margin-top:1rem">
+        ⓘ Database seeded with 2023–2024 race data. Kaggle dataset (1950–2023) available for extended seeding via <code>scripts/seed_ergast.py</code>.
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ ELO ══ -->
+<!-- ELO -->
 <div id="panel-elo" class="panel">
   <div class="container">
-    <div class="page-header">
+    <div class="page-title">
       <h1>Constructor ELO</h1>
-      <p>// pairwise elo ratings computed across all race results 2018–2024</p>
+      <p>// pairwise elo ratings — each constructor ranked once by most recent rating</p>
     </div>
-    <div class="card">
-      <div class="section-row">
-        <div class="section-title">Elo Rankings</div>
-        <button class="btn" onclick="loadElo()">
-          <span>↻</span> Refresh
-        </button>
+    <div class="card fade">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div class="card-title">ELO Rankings</div>
+        <button class="btn btn-sm" onclick="loadElo()">↻ Refresh</button>
       </div>
-      <div id="elo-output">
-        <div class="empty"><div class="empty-icon">◈</div>Click refresh to load rankings</div>
+      <div class="notice info" style="margin-bottom:1rem">
+        ⓘ Duplicates removed — each team appears once. Relative strength bar shows position between lowest and highest rated constructor.
       </div>
+      <div id="elo-output"><div class="loading"><div class="spin"></div>Loading rankings...</div></div>
     </div>
   </div>
 </div>
 
-<!-- ══ WET WEATHER ══ -->
+<!-- WET WEATHER -->
 <div id="panel-wet" class="panel">
   <div class="container">
-    <div class="page-header">
-      <h1>Wet Weather</h1>
-      <p>// driver performance in wet conditions, normalised for grid position</p>
+    <div class="page-title">
+      <h1>Wet Weather Scores</h1>
+      <p>// driver performance in rain — normalised for starting grid position</p>
     </div>
-    <div class="card">
-      <div class="section-row">
-        <div class="section-title">Driver Wet Scores</div>
-        <button class="btn" onclick="loadWet()">
-          <span>↻</span> Refresh
-        </button>
+    <div class="card fade" style="margin-bottom:1rem">
+      <div class="card-title" style="margin-bottom:1rem">Scoring Methodology</div>
+      <div class="grid-3" style="font-size:0.78rem;gap:0.7rem">
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">Position Gain</div>
+          <div style="color:var(--muted);font-size:0.72rem">Grid position minus finish position. Positive = moved forward through field in rain.</div>
+        </div>
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">Normalised Score</div>
+          <div style="color:var(--muted);font-size:0.72rem">Adjusted for opportunity. Starting P20 can gain 19 places; starting P1 cannot gain any.</div>
+        </div>
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px">Sample Caveat</div>
+          <div style="color:var(--muted);font-size:0.72rem">Drivers with fewer than 3 wet races show extreme scores. More races = more reliable rating.</div>
+        </div>
       </div>
-      <div id="wet-output">
-        <div class="empty"><div class="empty-icon">◈</div>Click refresh to load scores</div>
+    </div>
+    <div class="card fade d1">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+        <div class="card-title">Driver Wet Scores</div>
+        <button class="btn btn-sm" onclick="loadWet()">↻ Refresh</button>
       </div>
+      <div id="wet-output"><div class="loading"><div class="spin"></div>Loading scores...</div></div>
     </div>
   </div>
 </div>
 
-<!-- ══ HEAD TO HEAD ══ -->
+<!-- HEAD TO HEAD -->
 <div id="panel-h2h" class="panel">
   <div class="container">
-    <div class="page-header">
+    <div class="page-title">
       <h1>Head-to-Head</h1>
-      <p>// direct driver rivalry analysis across all shared races</p>
+      <p>// direct driver rivalry analysis across all shared race starts</p>
     </div>
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-label">Driver IDs</div>
-      <div class="inline-form">
+    <div class="card fade" style="margin-bottom:1rem">
+      <div class="card-title" style="margin-bottom:1rem">Driver Selection</div>
+      <div class="form-row">
         <div class="form-group">
-          <label>Driver A — ID</label>
-          <input type="number" id="h2h-a" placeholder="e.g. 1" value="1">
+          <label>Driver A</label>
+          <select id="h2h-a-sel"><option value="">Loading drivers...</option></select>
         </div>
+        <div style="display:flex;align-items:flex-end;padding-bottom:0.6rem;font-weight:700;color:var(--muted)">VS</div>
         <div class="form-group">
-          <label>Driver B — ID</label>
-          <input type="number" id="h2h-b" placeholder="e.g. 2" value="2">
+          <label>Driver B</label>
+          <select id="h2h-b-sel"><option value="">Loading drivers...</option></select>
         </div>
-        <div class="form-group" style="max-width:120px">
+        <div class="form-group" style="max-width:130px">
           <label>Season (opt)</label>
-          <input type="number" id="h2h-season" placeholder="e.g. 2023">
+          <input type="number" id="h2h-season" placeholder="e.g. 2023" min="2019" max="2024">
         </div>
-        <button class="btn" onclick="loadH2H()">Analyse</button>
+        <button class="btn" onclick="loadH2H()">Analyse ⇄</button>
       </div>
-      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.5rem">
-        Tip — find driver IDs at <a href="https://comp3011-f1-api.onrender.com/api/v1/drivers/" target="_blank" style="color:var(--red)">GET /api/v1/drivers/</a>
-      </p>
+      <p class="tip">Drivers loaded from live API. Try Verstappen vs Hamilton for a rich dataset.</p>
     </div>
     <div id="h2h-output"></div>
   </div>
 </div>
 
-<!-- ══ PIT WINDOW ══ -->
+<!-- PIT WINDOW -->
 <div id="panel-pit" class="panel">
   <div class="container">
-    <div class="page-header">
-      <h1>Pit Window</h1>
-      <p>// optimal pit stop lap calculator based on tyre degradation models</p>
+    <div class="page-title">
+      <h1>Pit Window Calculator</h1>
+      <p>// optimal pit stop laps based on tyre degradation regression models</p>
     </div>
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-label">Race & Driver</div>
-      <div class="inline-form">
+    <div class="card fade" style="margin-bottom:1rem">
+      <div class="card-title" style="margin-bottom:1rem">Race & Driver</div>
+      <div class="form-row">
         <div class="form-group">
-          <label>Race ID</label>
-          <input type="number" id="pit-race" placeholder="e.g. 10" value="10">
+          <label>Race</label>
+          <select id="pit-race-sel"><option value="">Loading races...</option></select>
         </div>
         <div class="form-group">
-          <label>Driver ID</label>
-          <input type="number" id="pit-driver" placeholder="e.g. 1" value="1">
+          <label>Driver</label>
+          <select id="pit-driver-sel"><option value="">Loading drivers...</option></select>
         </div>
-        <button class="btn" onclick="loadPit()">Calculate</button>
+        <button class="btn" onclick="loadPit()">Calculate ◎</button>
       </div>
-      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.5rem">
-        Tip — find race IDs at <a href="https://comp3011-f1-api.onrender.com/api/v1/races/" target="_blank" style="color:var(--red)">GET /api/v1/races/</a>
-      </p>
+      <p class="tip">Races and drivers loaded from live API. Strategy uses historical tyre degradation models.</p>
     </div>
     <div id="pit-output"></div>
   </div>
 </div>
 
-<!-- ══ AI ══ -->
+<!-- AI ADVISOR -->
 <div id="panel-ai" class="panel">
   <div class="container">
-    <div class="page-header">
-      <h1>AI Advisor 2026</h1>
-      <p>// llama 3.1 + historical elo data + 2026 regulation analysis</p>
+    <div class="page-title">
+      <h1>AI Strategy Advisor — 2026</h1>
+      <p>// llama 3.1 (groq) + historical elo + 2026 f1 regulation knowledge</p>
     </div>
-    <div class="card" style="margin-bottom:1rem">
-      <div class="card-label">Query Parameters</div>
-      <div class="inline-form">
+
+    <div class="card fade" style="margin-bottom:1rem">
+      <div class="card-title" style="margin-bottom:1rem">Why This Feature Exists</div>
+      <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;margin-bottom:1rem">
+        No dataset exists for 2026 F1 because the season has not happened. Traditional data-driven methods cannot answer strategic questions about a future regulation set.
+        This endpoint bridges that gap by combining <strong>real historical constructor Elo ratings</strong> from this database with <strong>AI reasoning</strong> about the known 2026 regulation changes.
+      </p>
+      <div class="grid-3" style="gap:0.6rem">
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">50/50 Power Split</div>
+          <div style="font-size:0.72rem;color:var(--muted)">MGU-K delivers 350kW. MGU-H removed entirely from the power unit.</div>
+        </div>
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">Active Aerodynamics</div>
+          <div style="font-size:0.72rem;color:var(--muted)">Z-mode (straights) vs X-mode (corners). Software-controlled auto-switching.</div>
+        </div>
+        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">Smaller Cars</div>
+          <div style="font-size:0.72rem;color:var(--muted)">5400×1900mm. Higher electrical torque stresses new Pirelli compounds.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card fade d1" style="margin-bottom:1rem">
+      <div class="card-title" style="margin-bottom:1rem">Generate Recommendation</div>
+      <div class="form-row">
         <div class="form-group">
           <label>Constructor</label>
-          <select id="ai-constructor">
-            <option value="Mercedes">Mercedes</option>
-            <option value="Red Bull">Red Bull</option>
-            <option value="Ferrari">Ferrari</option>
-            <option value="McLaren">McLaren</option>
-            <option value="Alpine">Alpine</option>
-            <option value="Aston Martin">Aston Martin</option>
-            <option value="Williams">Williams</option>
-            <option value="AlphaTauri">AlphaTauri</option>
+          <select id="ai-con">
+            <option>Mercedes</option><option>Red Bull</option><option>Ferrari</option>
+            <option>McLaren</option><option>Alpine</option><option>Aston Martin</option>
+            <option>Williams</option><option>AlphaTauri</option><option>Haas</option><option>Alfa Romeo</option>
           </select>
         </div>
         <div class="form-group">
           <label>Circuit</label>
-          <select id="ai-circuit">
-            <option value="Silverstone">Silverstone</option>
-            <option value="Monaco">Monaco</option>
-            <option value="Monza">Monza</option>
-            <option value="Spa">Spa-Francorchamps</option>
-            <option value="Suzuka">Suzuka</option>
-            <option value="Bahrain">Bahrain</option>
-            <option value="Singapore">Singapore</option>
+          <select id="ai-cir">
+            <option>Silverstone</option><option>Monaco</option><option>Monza</option>
+            <option>Spa</option><option>Suzuka</option><option>Bahrain</option>
+            <option>Singapore</option><option>Interlagos</option><option>Abu Dhabi</option>
           </select>
         </div>
-        <button class="btn" onclick="loadAI()" id="ai-btn">
-          <span>⚡</span> Generate
-        </button>
+        <button class="btn" onclick="loadAI()" id="ai-btn">⚡ Generate</button>
       </div>
-      <div style="margin-top:0.8rem;padding:0.7rem;background:var(--red-dim);border:1px solid rgba(232,0,45,0.15);border-radius:2px">
-        <p style="font-family:var(--mono);font-size:0.65rem;color:#ff9090;line-height:1.5">
-          ⚠ Note — AI model may take 30–60s on free tier. First request wakes the server.
-          This endpoint combines historical Elo ratings with AI reasoning about the 2026 F1 regulation changes
-          (active aero, 50/50 power split, MGU-H removal). No 2026 data exists — this bridges that gap.
-        </p>
-      </div>
+      <div class="notice danger">⚠ AI response may take 30–60s on free tier. First request wakes the Render server.</div>
     </div>
     <div id="ai-output"></div>
   </div>
@@ -896,367 +507,335 @@
 <script>
 const API = 'https://comp3011-f1-api.onrender.com';
 
-// ── TAB SWITCHING ──
-function switchTab(name) {
+async function get(path) {
+  const r = await fetch(API + path);
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+const spin = (m='Loading...') => `<div class="loading"><div class="spin"></div>${m}</div>`;
+const errBox = m => `<div class="err">⚠ ${m}</div>`;
+
+function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  event.target.classList.add('active');
+  el.classList.add('active');
   document.getElementById('panel-' + name).classList.add('active');
-
-  if (name === 'overview' && document.getElementById('stat-races').textContent === '—') loadOverview();
-  if (name === 'elo') loadElo();
-  if (name === 'wet') loadWet();
 }
 
-// ── FETCH HELPER ──
-async function apiFetch(path) {
-  const res = await fetch(API + path);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
-}
-
-function loading(msg = 'Fetching data...') {
-  return `<div class="loading"><div class="spinner"></div>${msg}</div>`;
-}
-
-function error(msg) {
-  return `<div class="error-msg">⚠ ${msg}</div>`;
-}
-
-// ── OVERVIEW ──
 async function loadOverview() {
-  const el = document.getElementById('health-output');
   try {
-    const data = await apiFetch('/');
-    el.innerHTML = `
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
-        <div style="width:8px;height:8px;border-radius:50%;background:#00c853"></div>
-        <span style="font-family:var(--mono);font-size:0.75rem;color:#00c853">API OPERATIONAL</span>
-        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-left:auto">${data.version || '1.0.0'}</span>
-      </div>
-      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text);line-height:1.8">
-        ${(data.features || []).map(f => `<div>▸ ${f}</div>`).join('')}
-      </div>`;
-
-    // Load quick stats
-    try {
-      const races = await apiFetch('/api/v1/races/?season=2023');
-      document.getElementById('stat-races').textContent = '149+';
-      document.getElementById('stat-drivers').textContent = '800+';
-      document.getElementById('stat-constructors').textContent = '40+';
-    } catch(e) {}
-  } catch(e) {
-    el.innerHTML = error('API unreachable — server may be sleeping. Try again in 30s.');
+    await get('/');
+    document.getElementById('stat-api').textContent = 'ONLINE';
+    document.getElementById('stat-api').style.color = '#00b341';
+  } catch {
+    document.getElementById('stat-api').textContent = 'SLEEPING';
+    document.getElementById('stat-api').style.color = 'rgba(255,255,255,0.3)';
   }
 }
 
-// ── ELO ──
+async function loadDropdowns() {
+  // Wake server first
+  try { await get('/'); } catch(e) {}
+
+  // Load drivers — try multiple response shapes
+  try {
+    const dd = await get('/api/v1/drivers/');
+    const drivers = Array.isArray(dd) ? dd : (dd.drivers || dd.items || dd.data || []);
+    if (drivers.length) {
+      const dOpts = drivers
+        .map(d => {
+          const name = [d.forename, d.surname].filter(Boolean).join(' ') || d.name || d.full_name || 'Driver ' + d.id;
+          return `<option value="${d.id}">${name}</option>`;
+        })
+        .join('');
+      ['h2h-a-sel','h2h-b-sel','pit-driver-sel'].forEach(id => {
+        document.getElementById(id).innerHTML = '<option value="">Select driver...</option>' + dOpts;
+      });
+    } else {
+      throw new Error('Empty driver list');
+    }
+  } catch(e) {
+    console.log('Driver dropdown failed:', e.message);
+    // Fallback: show manual ID input
+    ['h2h-a-sel','h2h-b-sel','pit-driver-sel'].forEach(id => {
+      const sel = document.getElementById(id);
+      sel.outerHTML = `<input type="number" id="${id}" placeholder="Enter driver ID" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;font-family:var(--inter);font-size:0.82rem;border-radius:6px;outline:none;width:100%">`;
+    });
+  }
+
+  // Load races — try multiple response shapes
+  try {
+    const rd = await get('/api/v1/races/');
+    const races = Array.isArray(rd) ? rd : (rd.races || rd.items || rd.data || []);
+    if (races.length) {
+      const rOpts = races
+        .map(r => {
+          const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
+          return `<option value="${r.id}">${label}</option>`;
+        })
+        .join('');
+      document.getElementById('pit-race-sel').innerHTML = '<option value="">Select race...</option>' + rOpts;
+    } else {
+      throw new Error('Empty race list');
+    }
+  } catch(e) {
+    console.log('Race dropdown failed:', e.message);
+    const sel = document.getElementById('pit-race-sel');
+    sel.outerHTML = `<input type="number" id="pit-race-sel" placeholder="Enter race ID" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;font-family:var(--inter);font-size:0.82rem;border-radius:6px;outline:none;width:100%">`;
+  }
+}
+
 async function loadElo() {
   const el = document.getElementById('elo-output');
-  el.innerHTML = loading('Computing Elo ratings...');
+  el.innerHTML = spin('Computing Elo ratings...');
   try {
-    const data = await apiFetch('/api/v1/strategy/constructor-elo');
-    const ratings = data.ratings || [];
-    const maxElo = Math.max(...ratings.map(r => r.elo));
-    const minElo = Math.min(...ratings.map(r => r.elo));
+    const data = await get('/api/v1/strategy/constructor-elo');
+    const all = data.ratings || [];
+
+    // Deduplicate: keep highest Elo per constructor name
+    const best = {};
+    for (const r of all) {
+      const key = r.constructor.toLowerCase().trim();
+      if (!best[key] || r.elo > best[key].elo) best[key] = r;
+    }
+    const unique = Object.values(best).sort((a,b) => b.elo - a.elo);
+
+    const maxElo = unique[0]?.elo || 2000;
+    const minElo = unique[unique.length-1]?.elo || 1500;
+    const rankCls = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
 
     el.innerHTML = `
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width:40px">#</th>
-            <th>Constructor</th>
-            <th>Elo Rating</th>
-            <th style="width:200px">Relative Strength</th>
-          </tr>
-        </thead>
+      <table class="tbl">
+        <thead><tr><th style="width:44px">#</th><th>Constructor</th><th>ELO</th><th>Relative Strength</th><th>vs Baseline</th></tr></thead>
         <tbody>
-          ${ratings.map((r, i) => {
-            const pct = ((r.elo - minElo) / (maxElo - minElo) * 100).toFixed(1);
-            return `
-              <tr>
-                <td><div class="rank-badge ${i < 3 ? 'top' : ''}">${i+1}</div></td>
-                <td style="color:var(--white);font-weight:500">${r.constructor}</td>
-                <td><span style="font-family:var(--mono);color:var(--white)">${r.elo.toFixed(1)}</span></td>
-                <td>
-                  <div class="elo-bar-wrap">
-                    <div class="elo-bar">
-                      <div class="elo-fill" style="width:${pct}%"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>`;
+          ${unique.map((r,i) => {
+            const pct = Math.max(2, ((r.elo - minElo) / (maxElo - minElo) * 100)).toFixed(1);
+            const diff = (r.elo - 1500).toFixed(0);
+            const sign = diff > 0 ? '+' : '';
+            return `<tr>
+              <td><div class="rank ${rankCls(i)}">${i+1}</div></td>
+              <td class="bold">${r.constructor}</td>
+              <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${r.elo.toFixed(1)}</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:10px">
+                  <div class="elo-bar" style="flex:1"><div class="elo-fill" style="width:${pct}%"></div></div>
+                  <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);min-width:36px;text-align:right">${pct}%</span>
+                </div>
+              </td>
+              <td style="font-family:var(--mono);font-size:0.72rem;color:${diff>0?'var(--green)':'var(--red)'}">${sign}${diff}</td>
+            </tr>`;
           }).join('')}
         </tbody>
-      </table>`;
-  } catch(e) {
-    el.innerHTML = error('Failed to load Elo data — ' + e.message);
-  }
+      </table>
+      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:1rem;padding:0.8rem;background:var(--surface2);border-radius:6px">
+        ${data.methodology || 'Pairwise Elo — each race updates ratings based on expected vs actual finishing order.'}
+      </p>`;
+  } catch(e) { el.innerHTML = errBox('Failed: ' + e.message); }
 }
 
-// ── WET WEATHER ──
 async function loadWet() {
   const el = document.getElementById('wet-output');
-  el.innerHTML = loading('Analysing wet weather performance...');
+  el.innerHTML = spin('Analysing wet conditions...');
   try {
-    const data = await apiFetch('/api/v1/strategy/wet-weather-scores');
+    const data = await get('/api/v1/strategy/wet-weather-scores');
     const scores = data.scores || [];
+    if (!scores.length) { el.innerHTML = '<div class="empty">No wet race data available</div>'; return; }
 
-    if (!scores.length) {
-      el.innerHTML = `<div class="empty"><div class="empty-icon">◈</div>No wet weather data available</div>`;
-      return;
-    }
+    const chipCls = r => ({'Elite':'elite','Strong':'strong','Average':'average','Weak':'weak'}[r]||'weak');
+    const interp = g => g > 3 ? 'Significant rain advantage' : g > 1 ? 'Gains positions in rain' : g > 0 ? 'Slight advantage' : g === 0 ? 'Neutral' : 'Loses positions in rain';
 
     el.innerHTML = `
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Driver</th>
-            <th>Rating</th>
-            <th>Avg Position Gain</th>
-            <th>Normalised Score</th>
-            <th>Wet Races</th>
-          </tr>
-        </thead>
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Driver</th><th>Rating</th><th>Avg Pos Gain</th><th>Norm Score</th><th>Wet Races</th><th>Interpretation</th></tr></thead>
         <tbody>
-          ${scores.map((s, i) => `
-            <tr>
-              <td style="color:var(--muted);font-family:var(--mono)">${i+1}</td>
-              <td style="color:var(--white)">${s.driver}</td>
-              <td><span class="rating rating-${s.wet_weather_rating}">${s.wet_weather_rating}</span></td>
-              <td style="font-family:var(--mono)">${s.avg_position_gain > 0 ? '+' : ''}${s.avg_position_gain?.toFixed(2)}</td>
-              <td style="font-family:var(--mono);color:${s.normalised_wet_score > 0 ? '#77cc77' : '#ff6b6b'}">${s.normalised_wet_score?.toFixed(3)}</td>
+          ${scores.map((s,i) => {
+            const g = parseFloat(s.avg_position_gain)||0;
+            const n = parseFloat(s.normalised_wet_score)||0;
+            return `<tr>
+              <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+              <td class="bold">${s.driver}</td>
+              <td><span class="chip chip-${chipCls(s.wet_weather_rating)}">${s.wet_weather_rating}</span></td>
+              <td style="font-family:var(--mono);color:${g>=0?'var(--green)':'var(--red)'};font-weight:500">${g>=0?'+':''}${g.toFixed(2)}</td>
+              <td style="font-family:var(--mono);color:${n>0?'#059669':'#dc2626'}">${n.toFixed(3)}</td>
               <td style="font-family:var(--mono);color:var(--muted)">${s.wet_races_analysed}</td>
-            </tr>`).join('')}
+              <td style="font-size:0.72rem;color:var(--text2)">${interp(g)}</td>
+            </tr>`;
+          }).join('')}
         </tbody>
       </table>
-      <div style="margin-top:1rem;padding:0.8rem;background:var(--surface2);border-radius:2px">
-        <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);line-height:1.6">${data.methodology || ''}</p>
+      <div class="notice warn" style="margin-top:1rem">
+        ⚠ Drivers with 2–4 wet races may show extreme normalised scores due to small sample sizes. Interpret Elite ratings with few races cautiously.
       </div>`;
-  } catch(e) {
-    el.innerHTML = error('Failed to load wet weather data — ' + e.message);
-  }
+  } catch(e) { el.innerHTML = errBox('Failed: ' + e.message); }
 }
 
-// ── HEAD TO HEAD ──
 async function loadH2H() {
-  const a = document.getElementById('h2h-a').value;
-  const b = document.getElementById('h2h-b').value;
+  const a = document.getElementById('h2h-a-sel').value;
+  const b = document.getElementById('h2h-b-sel').value;
   const season = document.getElementById('h2h-season').value;
   const el = document.getElementById('h2h-output');
-
-  if (!a || !b) { el.innerHTML = error('Enter both driver IDs'); return; }
-
-  el.innerHTML = `<div class="card">${loading('Analysing rivalry...')}</div>`;
-
+  if (!a || !b) { el.innerHTML = errBox('Select both drivers'); return; }
+  if (a === b) { el.innerHTML = errBox('Select two different drivers'); return; }
+  el.innerHTML = `<div class="card">${spin('Analysing head-to-head record...')}</div>`;
   try {
     let url = `/api/v1/analytics/head-to-head/${a}/${b}`;
     if (season) url += `?season=${season}`;
-    const data = await apiFetch(url);
-    const h2h = data.head_to_head;
-    const winPctA = h2h.driver_a_win_rate;
-    const winPctB = h2h.driver_b_win_rate;
+    const d = await get(url);
+    const h = d.head_to_head;
+    const pctA = parseFloat(h.driver_a_win_rate)||0;
+    const pctB = parseFloat(h.driver_b_win_rate)||0;
+    const nameA = d.driver_a?.name || 'Driver A';
+    const nameB = d.driver_b?.name || 'Driver B';
+    const shortA = nameA.split(' ').slice(-1)[0];
+    const shortB = nameB.split(' ').slice(-1)[0];
 
     el.innerHTML = `
       <div class="grid-2" style="margin-bottom:1rem">
-        <div class="card">
-          <div class="card-label">Overall Winner</div>
-          <div class="h2h-winner">${h2h.overall_winner.split(' ').slice(-1)[0].toUpperCase()} <span>WINS</span></div>
-          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:0.3rem">${data.shared_races_analysed} races analysed</div>
-          <div class="h2h-bar" style="margin-top:1rem">
-            <div class="h2h-a" style="width:${winPctA}%"></div>
-            <div class="h2h-b" style="width:${winPctB}%"></div>
+        <div class="winner-banner fade">
+          <div class="winner-label">Overall Winner</div>
+          <div class="winner-name">${(h.overall_winner||'').split(' ').slice(-1)[0].toUpperCase()}</div>
+          <div style="font-family:var(--mono);font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:4px">${d.shared_races_analysed} races analysed</div>
+          <div class="h2h-bar-track">
+            <div class="h2h-seg-a" style="width:${pctA}%"></div>
+            <div class="h2h-seg-b" style="width:${pctB}%"></div>
           </div>
           <div class="h2h-labels">
-            <span style="color:var(--red)">${data.driver_a.name} ${winPctA}%</span>
-            <span style="color:#3a6ea8">${data.driver_b.name} ${winPctB}%</span>
+            <span style="color:var(--red);font-family:var(--mono);font-size:0.65rem;font-weight:600">${shortA} ${pctA}%</span>
+            <span style="color:#3b82f6;font-family:var(--mono);font-size:0.65rem;font-weight:600">${shortB} ${pctB}%</span>
           </div>
         </div>
-        <div class="card">
-          <div class="card-label">Statistics</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
-            <div class="stat-block">
-              <div class="stat-value">${h2h.driver_a_wins}</div>
-              <div class="stat-label">${data.driver_a.name.split(' ').slice(-1)[0]} Wins</div>
-            </div>
-            <div class="stat-block">
-              <div class="stat-value">${h2h.driver_b_wins}</div>
-              <div class="stat-label">${data.driver_b.name.split(' ').slice(-1)[0]} Wins</div>
-            </div>
-            <div class="stat-block">
-              <div class="stat-value">${h2h.driver_a_total_points}</div>
-              <div class="stat-label">${data.driver_a.name.split(' ').slice(-1)[0]} Pts</div>
-            </div>
-            <div class="stat-block">
-              <div class="stat-value">${h2h.driver_b_total_points}</div>
-              <div class="stat-label">${data.driver_b.name.split(' ').slice(-1)[0]} Pts</div>
-            </div>
+        <div class="card fade d1">
+          <div class="card-title" style="margin-bottom:1rem">Statistics</div>
+          <div class="grid-2" style="gap:0.6rem">
+            <div class="stat-card"><div class="stat-num red">${h.driver_a_wins}</div><div class="stat-lbl">${shortA} Wins</div></div>
+            <div class="stat-card"><div class="stat-num" style="color:#3b82f6">${h.driver_b_wins}</div><div class="stat-lbl">${shortB} Wins</div></div>
+            <div class="stat-card"><div class="stat-num">${h.driver_a_total_points}</div><div class="stat-lbl">${shortA} Pts</div></div>
+            <div class="stat-card"><div class="stat-num">${h.driver_b_total_points}</div><div class="stat-lbl">${shortB} Pts</div></div>
+          </div>
+          <hr>
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.7rem;color:var(--muted)">
+            <span>Dominance Score</span>
+            <span style="color:var(--text);font-weight:600">${parseFloat(d.dominance_score||0).toFixed(1)}</span>
           </div>
         </div>
       </div>
-
-      <div class="card">
-        <div class="card-label">Season Breakdown</div>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Season</th>
-              <th>Races</th>
-              <th>${data.driver_a.name}</th>
-              <th>${data.driver_b.name}</th>
-              <th>Winner</th>
-            </tr>
-          </thead>
+      <div class="card fade d2">
+        <div class="card-title" style="margin-bottom:1rem">Season Breakdown</div>
+        <table class="tbl">
+          <thead><tr><th>Season</th><th>Races</th><th>${nameA}</th><th>${nameB}</th><th>Winner</th></tr></thead>
           <tbody>
-            ${(data.season_breakdown || []).map(s => `
-              <tr>
-                <td style="font-family:var(--mono);color:var(--white)">${s.season}</td>
-                <td style="font-family:var(--mono)">${s.races_together}</td>
-                <td style="font-family:var(--mono);color:var(--red)">${s.driver_a_wins}</td>
-                <td style="font-family:var(--mono);color:#3a6ea8">${s.driver_b_wins}</td>
-                <td style="font-size:0.75rem">${s.season_winner}</td>
-              </tr>`).join('')}
+            ${(d.season_breakdown||[]).map(s => `<tr>
+              <td><span class="season-tag">${s.season}</span></td>
+              <td style="font-family:var(--mono)">${s.races_together}</td>
+              <td style="font-family:var(--mono);color:var(--red);font-weight:600">${s.driver_a_wins}</td>
+              <td style="font-family:var(--mono);color:#3b82f6;font-weight:600">${s.driver_b_wins}</td>
+              <td style="font-size:0.78rem;font-weight:500">${s.season_winner||'—'}</td>
+            </tr>`).join('')}
           </tbody>
         </table>
       </div>`;
-  } catch(e) {
-    el.innerHTML = error('Failed — ' + e.message + '. Check driver IDs exist in the database.');
-  }
+  } catch(e) { el.innerHTML = errBox('Analysis failed — ' + e.message); }
 }
 
-// ── PIT WINDOW ──
 async function loadPit() {
-  const race = document.getElementById('pit-race').value;
-  const driver = document.getElementById('pit-driver').value;
+  const race = document.getElementById('pit-race-sel').value;
+  const driver = document.getElementById('pit-driver-sel').value;
   const el = document.getElementById('pit-output');
-
-  el.innerHTML = `<div class="card">${loading('Calculating pit window...')}</div>`;
-
+  if (!race || !driver) { el.innerHTML = errBox('Select a race and driver'); return; }
+  el.innerHTML = `<div class="card">${spin('Calculating pit window...')}</div>`;
   try {
-    const data = await apiFetch(`/api/v1/strategy/pit-window/${race}/${driver}`);
+    const d = await get(`/api/v1/strategy/pit-window/${race}/${driver}`);
+    const optLaps = (d.recommended_pit_laps||[]).join(', ') || '—';
+    const undLaps = (d.undercut_window_laps||[]).join(', ') || '—';
+    const avgPit = d.avg_pit_stop_duration_seconds ? d.avg_pit_stop_duration_seconds.toFixed(3) + 's' : '—';
+    const stints = d.stint_analysis || [];
 
     el.innerHTML = `
       <div class="grid-3" style="margin-bottom:1rem">
-        <div class="stat-block card" style="animation-delay:0.05s">
-          <div class="stat-value">${(data.recommended_pit_laps || []).join(', ') || '—'}</div>
-          <div class="stat-label">Optimal Pit Laps</div>
-        </div>
-        <div class="stat-block card" style="animation-delay:0.1s">
-          <div class="stat-value">${(data.undercut_window_laps || []).join(', ') || '—'}</div>
-          <div class="stat-label">Undercut Window</div>
-        </div>
-        <div class="stat-block card" style="animation-delay:0.15s">
-          <div class="stat-value">${data.avg_pit_stop_duration_seconds || '—'}s</div>
-          <div class="stat-label">Avg Pit Duration</div>
-        </div>
+        <div class="stat-card fade"><div class="stat-num red">${optLaps}</div><div class="stat-lbl">Optimal Pit Laps</div></div>
+        <div class="stat-card fade d1"><div class="stat-num">${undLaps}</div><div class="stat-lbl">Undercut Window</div></div>
+        <div class="stat-card fade d2"><div class="stat-num" style="font-size:1.4rem">${avgPit}</div><div class="stat-lbl">Avg Pit Duration</div></div>
       </div>
-
-      <div class="card" style="margin-bottom:1rem">
-        <div class="card-label">Stint Analysis</div>
-        <table class="data-table">
-          <thead>
-            <tr><th>Stint</th><th>Compound</th><th>Laps</th><th>Optimal Pit</th><th>Undercut</th></tr>
-          </thead>
+      ${stints.length ? `
+      <div class="card fade d1" style="margin-bottom:1rem">
+        <div class="card-title" style="margin-bottom:1rem">Stint Analysis</div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Compound</th><th>Lap Range</th><th>Optimal Pit</th><th>Undercut Lap</th><th>Length</th></tr></thead>
           <tbody>
-            ${(data.stint_analysis || []).map((s, i) => `
-              <tr>
-                <td style="font-family:var(--mono)">${i+1}</td>
-                <td><span style="font-family:var(--mono);font-size:0.7rem;padding:2px 6px;background:var(--surface2);border-radius:2px">${s.compound}</span></td>
-                <td style="font-family:var(--mono)">${s.lap_start}–${s.lap_end}</td>
-                <td style="font-family:var(--mono);color:var(--white)">${s.optimal_pit_lap}</td>
-                <td style="font-family:var(--mono);color:var(--muted)">${s.undercut_lap || '—'}</td>
-              </tr>`).join('')}
+            ${stints.map((s,i) => `<tr>
+              <td style="font-family:var(--mono)">${i+1}</td>
+              <td><span style="font-family:var(--mono);font-size:0.7rem;padding:3px 8px;background:var(--surface2);border-radius:4px;border:1px solid var(--border)">${s.compound||'—'}</span></td>
+              <td style="font-family:var(--mono)">${s.lap_start??'?'}–${s.lap_end??'?'}</td>
+              <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${s.optimal_pit_lap||'—'}</td>
+              <td style="font-family:var(--mono);color:var(--muted)">${s.undercut_lap||'—'}</td>
+              <td style="font-family:var(--mono)">${s.lap_end!=null&&s.lap_start!=null ? s.lap_end-s.lap_start : '—'} laps</td>
+            </tr>`).join('')}
           </tbody>
         </table>
-      </div>
-
-      <div class="card">
-        <div class="card-label">Strategy Summary</div>
-        <p style="font-size:0.82rem;line-height:1.6;margin-bottom:1rem">${data.strategy_summary || ''}</p>
-        <div class="card-label">Limitations</div>
-        ${(data.limitations || []).map(l => `
-          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-bottom:0.3rem">▸ ${l}</div>
-        `).join('')}
+      </div>` : ''}
+      <div class="card fade d2">
+        <div class="card-title" style="margin-bottom:1rem">Strategy Summary</div>
+        <p style="font-size:0.83rem;line-height:1.7;color:var(--text2);margin-bottom:${d.limitations?.length?'1rem':'0'}">${d.strategy_summary||'No summary available.'}</p>
+        ${d.limitations?.length ? `<hr><div class="card-title" style="margin-bottom:0.8rem">Model Limitations</div>
+        ${d.limitations.map(l=>`<div style="font-family:var(--mono);font-size:0.67rem;color:var(--muted);margin-bottom:5px;display:flex;gap:8px"><span style="color:var(--red)">▸</span>${l}</div>`).join('')}` : ''}
       </div>`;
-  } catch(e) {
-    el.innerHTML = error('Failed — ' + e.message);
-  }
+  } catch(e) { el.innerHTML = errBox('Calculation failed — ' + e.message); }
 }
 
-// ── AI ADVISOR ──
 async function loadAI() {
-  const constructor = document.getElementById('ai-constructor').value;
-  const circuit = document.getElementById('ai-circuit').value;
+  const con = document.getElementById('ai-con').value;
+  const cir = document.getElementById('ai-cir').value;
   const el = document.getElementById('ai-output');
   const btn = document.getElementById('ai-btn');
-
   btn.disabled = true;
-  btn.innerHTML = '<div class="spinner" style="width:12px;height:12px;border-width:1.5px"></div> Generating...';
-  el.innerHTML = `<div class="card">${loading('AI reasoning over 2026 regulations + historical data... (may take 30–60s)')}</div>`;
-
+  btn.innerHTML = '<div class="spin" style="width:12px;height:12px;border-width:1.5px"></div> Generating...';
+  el.innerHTML = `<div class="card">${spin('AI reasoning over 2026 regs + historical Elo data... (30–60s on free tier)')}</div>`;
   try {
-    const data = await apiFetch(`/api/v1/analytics/ai-strategy/${encodeURIComponent(constructor)}/${encodeURIComponent(circuit)}`);
-
+    const d = await get(`/api/v1/analytics/ai-strategy/${encodeURIComponent(con)}/${encodeURIComponent(cir)}`);
     el.innerHTML = `
       <div class="grid-2" style="margin-bottom:1rem">
-        <div class="card" style="animation-delay:0.05s">
-          <div class="card-label">Constructor Profile</div>
-          <div style="display:flex;flex-direction:column;gap:0.6rem">
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:0.8rem">Constructor</span>
-              <span style="font-family:var(--mono);color:var(--white)">${data.constructor}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:0.8rem">Elo Rating</span>
-              <span style="font-family:var(--mono);color:var(--white)">${data.historical_data?.elo_rating?.toFixed(1) || '—'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:0.8rem">Elo Rank</span>
-              <span style="font-family:var(--mono);color:var(--red)">#${data.historical_data?.elo_rank || '—'} of ${data.historical_data?.total_constructors_ranked || '—'}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:0.8rem">Circuit</span>
-              <span style="font-family:var(--mono);color:var(--white)">${data.circuit}</span>
-            </div>
-            <div style="display:flex;justify-content:space-between">
-              <span style="font-size:0.8rem">Season</span>
-              <span style="font-family:var(--mono);color:var(--red)">${data.season}</span>
-            </div>
-          </div>
-        </div>
-        <div class="card" style="animation-delay:0.1s">
-          <div class="card-label">2026 Regs Considered</div>
-          ${(data.regulation_changes_considered || []).map(r => `
-            <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text);margin-bottom:0.4rem;display:flex;gap:8px">
-              <span style="color:var(--red)">▸</span>${r}
+        <div class="card fade">
+          <div class="card-title" style="margin-bottom:1rem">Constructor Profile</div>
+          ${[
+            ['Constructor', d.constructor],
+            ['Circuit', d.circuit],
+            ['Season', String(d.season)],
+            ['Elo Rating', d.historical_data?.elo_rating?.toFixed(1)||'—'],
+            ['Elo Rank', `#${d.historical_data?.elo_rank||'—'} of ${d.historical_data?.total_constructors_ranked||'—'}`],
+            ['Data Coverage', d.historical_data?.data_coverage||'2023–2024'],
+          ].map(([k,v],i)=>`
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:0.78rem;color:var(--text2)">${k}</span>
+              <span style="font-family:var(--mono);font-size:0.72rem;color:${i===2||i===4?'var(--red)':'var(--dark)'};font-weight:600">${v}</span>
             </div>`).join('')}
-          <div style="margin-top:0.8rem;font-family:var(--mono);font-size:0.6rem;color:var(--muted)">
-            Powered by ${data.model_used || 'AI'}
-          </div>
+          <div style="margin-top:0.8rem;font-family:var(--mono);font-size:0.58rem;color:var(--muted)">Powered by ${d.model_used||'AI'}</div>
+        </div>
+        <div class="card fade d1">
+          <div class="card-title" style="margin-bottom:1rem">2026 Regs Considered</div>
+          ${(d.regulation_changes_considered||[]).map(r=>`
+            <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:0.6rem">
+              <span style="color:var(--red);margin-top:1px">▸</span>
+              <span style="font-size:0.78rem;color:var(--text2)">${r}</span>
+            </div>`).join('')}
         </div>
       </div>
-
-      <div class="card" style="animation-delay:0.15s">
-        <div class="ai-meta">
-          <div class="ai-meta-dot"></div>
-          AI STRATEGIC RECOMMENDATION — ${data.constructor.toUpperCase()} AT ${data.circuit.toUpperCase()} — 2026
-        </div>
-        <div class="ai-output">${data.ai_strategic_recommendation}</div>
-        <div style="margin-top:1rem;padding:0.7rem;background:var(--surface2);border-radius:2px">
-          <p style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);line-height:1.5">${data.disclaimer}</p>
-        </div>
+      <div class="card fade d2">
+        <div class="ai-tag"><div class="ai-dot"></div>AI RECOMMENDATION · ${con.toUpperCase()} · ${cir.toUpperCase()} · 2026</div>
+        <div class="ai-box">${d.ai_strategic_recommendation}</div>
+        <div class="notice warn" style="margin-top:1rem">${d.disclaimer}</div>
       </div>`;
   } catch(e) {
-    el.innerHTML = error('AI generation failed — ' + e.message + '. The server may be sleeping, try again in 30s.');
+    el.innerHTML = errBox('AI generation failed — ' + e.message + '. Server may be sleeping, try again in 30s.');
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span>⚡</span> Generate';
+    btn.innerHTML = '⚡ Generate';
   }
 }
 
-// ── INIT ──
 loadOverview();
+loadDropdowns();
+loadElo();
+loadWet();
 </script>
 </body>
 </html>
