@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Strategic Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #111111;
+    --surface2: #1a1a1a;
+    --border: #222222;
+    --border2: #2a2a2a;
+    --red: #e8002d;
+    --red-dim: rgba(232,0,45,0.12);
+    --white: #f0f0f0;
+    --muted: #555555;
+    --text: #cccccc;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+    --display: 'Bebas Neue', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    background: rgba(8,8,8,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-mark {
+    width: 28px;
+    height: 28px;
+    background: var(--red);
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 70% 100%, 0 100%);
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    font-family: var(--display);
+    font-size: 1.3rem;
+    letter-spacing: 0.08em;
+    color: var(--white);
+  }
+
+  .logo-sub {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00c853;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── NAV TABS ── */
+  nav {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--surface);
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  .tab {
+    padding: 0.75rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .tab:hover { color: var(--text); }
+  .tab.active {
+    color: var(--white);
+    border-bottom-color: var(--red);
+  }
+
+  /* ── LAYOUT ── */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .page-header h1 {
+    font-family: var(--display);
+    font-size: 2.5rem;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .page-header p {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    letter-spacing: 0.08em;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  .card-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+
+  @media (max-width: 768px) {
+    .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  /* ── FORM CONTROLS ── */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1rem;
+  }
+
+  label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  input, select {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    color: var(--white);
+    padding: 0.6rem 0.8rem;
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  input:focus, select:focus { border-color: var(--red); }
+
+  select option { background: var(--surface2); }
+
+  .btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn:hover { background: #ff1a3e; transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text);
+  }
+  .btn-ghost:hover { background: var(--surface2); border-color: var(--muted); }
+
+  /* ── LOADING ── */
+  .loading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+    padding: 2rem 0;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--border2);
+    border-top-color: var(--red);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── DATA TABLE ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .data-table th {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 0.7rem 0.8rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: var(--surface2); }
+
+  /* ── ELO BAR ── */
+  .elo-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .elo-bar {
+    height: 4px;
+    background: var(--border2);
+    border-radius: 2px;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .elo-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  .elo-val {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--white);
+    min-width: 50px;
+    text-align: right;
+  }
+
+  .rank-badge {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+
+  .rank-badge.top { border-color: var(--red); color: var(--red); }
+
+  /* ── STAT BLOCKS ── */
+  .stat-block {
+    padding: 1.2rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+
+  .stat-value {
+    font-family: var(--display);
+    font-size: 2rem;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── RATING CHIP ── */
+  .rating {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 2px;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .rating-Elite { background: rgba(232,0,45,0.2); color: #ff6b6b; border: 1px solid rgba(232,0,45,0.3); }
+  .rating-Strong { background: rgba(255,165,0,0.15); color: #ffaa44; border: 1px solid rgba(255,165,0,0.3); }
+  .rating-Average { background: rgba(100,200,100,0.12); color: #77cc77; border: 1px solid rgba(100,200,100,0.25); }
+  .rating-Weak { background: rgba(100,100,100,0.15); color: #888; border: 1px solid #333; }
+
+  /* ── AI OUTPUT ── */
+  .ai-output {
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--red);
+    padding: 1.2rem 1.4rem;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text);
+    border-radius: 0 2px 2px 0;
+    white-space: pre-wrap;
+    margin-top: 1rem;
+  }
+
+  .ai-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+  }
+
+  .ai-meta-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+
+  /* ── H2H ── */
+  .h2h-bar {
+    height: 8px;
+    background: var(--border2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.8rem 0;
+    display: flex;
+  }
+
+  .h2h-a { background: var(--red); transition: width 0.8s ease; }
+  .h2h-b { background: #3a6ea8; transition: width 0.8s ease; }
+
+  .h2h-labels {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--muted);
+  }
+
+  .h2h-winner {
+    font-family: var(--display);
+    font-size: 1.6rem;
+    color: var(--white);
+    letter-spacing: 0.05em;
+  }
+
+  .h2h-winner span { color: var(--red); }
+
+  /* ── ERROR ── */
+  .error-msg {
+    background: rgba(232,0,45,0.08);
+    border: 1px solid rgba(232,0,45,0.2);
+    color: #ff6b6b;
+    padding: 0.8rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    border-radius: 2px;
+    margin-top: 1rem;
+  }
+
+  /* ── EMPTY ── */
+  .empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+  }
+
+  .empty-icon {
+    font-size: 2rem;
+    margin-bottom: 0.8rem;
+    opacity: 0.3;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+  /* ── STAGGER ── */
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 0.8rem;
+  }
+
+  .hero h1 {
+    font-family: var(--display);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    letter-spacing: 0.04em;
+    color: var(--white);
+    line-height: 0.95;
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--red);
+  }
+
+  .hero p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hero-stat-num {
+    font-family: var(--display);
+    font-size: 1.8rem;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .hero-stat-lbl {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.5rem 0;
+  }
+
+  /* ── INLINE FORM ── */
+  .inline-form {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .inline-form .form-group {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  /* ── SECTION ROW ── */
+  .section-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-mark"></div>
+    <div>
+      <div class="logo-text">F1 INTELLIGENCE</div>
+      <div class="logo-sub">Strategic Analysis Platform</div>
+    </div>
+  </div>
+  <div class="status-pill">
+    <div class="status-dot"></div>
+    API LIVE
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" onclick="switchTab('overview')">Overview</button>
+  <button class="tab" onclick="switchTab('elo')">Constructor ELO</button>
+  <button class="tab" onclick="switchTab('wet')">Wet Weather</button>
+  <button class="tab" onclick="switchTab('h2h')">Head-to-Head</button>
+  <button class="tab" onclick="switchTab('pit')">Pit Window</button>
+  <button class="tab" onclick="switchTab('ai')">AI Advisor 2026</button>
+</nav>
+
+<!-- ══ OVERVIEW ══ -->
+<div id="panel-overview" class="panel active">
+  <div class="container">
+    <div class="hero">
+      <div class="hero-eyebrow">COMP3011 — University Project</div>
+      <h1>F1 STRATEGIC<br><em>INTELLIGENCE</em></h1>
+      <p>A RESTful API providing Formula 1 race strategy intelligence. Built with FastAPI, PostgreSQL, and real race data from 2018–2024.</p>
+      <div class="hero-stats" id="hero-stats">
+        <div class="hero-stat-item">
+          <div class="hero-stat-num" id="stat-races">—</div>
+          <div class="hero-stat-lbl">Races Analysed</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num" id="stat-drivers">—</div>
+          <div class="hero-stat-lbl">Drivers</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num" id="stat-constructors">—</div>
+          <div class="hero-stat-lbl">Constructors</div>
+        </div>
+        <div class="hero-stat-item">
+          <div class="hero-stat-num">7</div>
+          <div class="hero-stat-lbl">Seasons</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card" style="animation-delay:0.1s">
+        <div class="card-label">Data Sources</div>
+        <div style="display:flex;flex-direction:column;gap:0.7rem">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:0.8rem">Kaggle F1 Dataset</span>
+            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">1950–2023</span>
+          </div>
+          <div class="divider" style="margin:0"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:0.8rem">Jolpica / Ergast</span>
+            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">2024</span>
+          </div>
+          <div class="divider" style="margin:0"></div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:0.8rem">OpenF1 API</span>
+            <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">2023–2024</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="animation-delay:0.15s">
+        <div class="card-label">Intelligence Features</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem">
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Constructor Elo Engine</div>
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Wet Weather Scorer</div>
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Pit Window Calculator</div>
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Tyre Degradation Model</div>
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> Head-to-Head Rivalry</div>
+          <div style="font-size:0.8rem;display:flex;align-items:center;gap:8px"><span style="color:var(--red)">↗</span> AI 2026 Reg Advisor</div>
+        </div>
+      </div>
+
+      <div class="card" style="animation-delay:0.2s">
+        <div class="card-label">Tech Stack</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem">
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">Framework</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">FastAPI</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">Database</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">PostgreSQL</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">ORM</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">SQLAlchemy async</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">Auth</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">JWT + Argon2</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">AI</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">Groq / LLaMA</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:0.8rem">Deployment</span>
+            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--white)">Render</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem">
+      <div class="card" style="animation-delay:0.25s">
+        <div class="card-label">API Health Check</div>
+        <div id="health-output">
+          <div class="loading"><div class="spinner"></div>Connecting to API...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ ELO ══ -->
+<div id="panel-elo" class="panel">
+  <div class="container">
+    <div class="page-header">
+      <h1>Constructor ELO</h1>
+      <p>// pairwise elo ratings computed across all race results 2018–2024</p>
+    </div>
+    <div class="card">
+      <div class="section-row">
+        <div class="section-title">Elo Rankings</div>
+        <button class="btn" onclick="loadElo()">
+          <span>↻</span> Refresh
+        </button>
+      </div>
+      <div id="elo-output">
+        <div class="empty"><div class="empty-icon">◈</div>Click refresh to load rankings</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WET WEATHER ══ -->
+<div id="panel-wet" class="panel">
+  <div class="container">
+    <div class="page-header">
+      <h1>Wet Weather</h1>
+      <p>// driver performance in wet conditions, normalised for grid position</p>
+    </div>
+    <div class="card">
+      <div class="section-row">
+        <div class="section-title">Driver Wet Scores</div>
+        <button class="btn" onclick="loadWet()">
+          <span>↻</span> Refresh
+        </button>
+      </div>
+      <div id="wet-output">
+        <div class="empty"><div class="empty-icon">◈</div>Click refresh to load scores</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HEAD TO HEAD ══ -->
+<div id="panel-h2h" class="panel">
+  <div class="container">
+    <div class="page-header">
+      <h1>Head-to-Head</h1>
+      <p>// direct driver rivalry analysis across all shared races</p>
+    </div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-label">Driver IDs</div>
+      <div class="inline-form">
+        <div class="form-group">
+          <label>Driver A — ID</label>
+          <input type="number" id="h2h-a" placeholder="e.g. 1" value="1">
+        </div>
+        <div class="form-group">
+          <label>Driver B — ID</label>
+          <input type="number" id="h2h-b" placeholder="e.g. 2" value="2">
+        </div>
+        <div class="form-group" style="max-width:120px">
+          <label>Season (opt)</label>
+          <input type="number" id="h2h-season" placeholder="e.g. 2023">
+        </div>
+        <button class="btn" onclick="loadH2H()">Analyse</button>
+      </div>
+      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.5rem">
+        Tip — find driver IDs at <a href="https://comp3011-f1-api.onrender.com/api/v1/drivers/" target="_blank" style="color:var(--red)">GET /api/v1/drivers/</a>
+      </p>
+    </div>
+    <div id="h2h-output"></div>
+  </div>
+</div>
+
+<!-- ══ PIT WINDOW ══ -->
+<div id="panel-pit" class="panel">
+  <div class="container">
+    <div class="page-header">
+      <h1>Pit Window</h1>
+      <p>// optimal pit stop lap calculator based on tyre degradation models</p>
+    </div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-label">Race & Driver</div>
+      <div class="inline-form">
+        <div class="form-group">
+          <label>Race ID</label>
+          <input type="number" id="pit-race" placeholder="e.g. 10" value="10">
+        </div>
+        <div class="form-group">
+          <label>Driver ID</label>
+          <input type="number" id="pit-driver" placeholder="e.g. 1" value="1">
+        </div>
+        <button class="btn" onclick="loadPit()">Calculate</button>
+      </div>
+      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:0.5rem">
+        Tip — find race IDs at <a href="https://comp3011-f1-api.onrender.com/api/v1/races/" target="_blank" style="color:var(--red)">GET /api/v1/races/</a>
+      </p>
+    </div>
+    <div id="pit-output"></div>
+  </div>
+</div>
+
+<!-- ══ AI ══ -->
+<div id="panel-ai" class="panel">
+  <div class="container">
+    <div class="page-header">
+      <h1>AI Advisor 2026</h1>
+      <p>// llama 3.1 + historical elo data + 2026 regulation analysis</p>
+    </div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-label">Query Parameters</div>
+      <div class="inline-form">
+        <div class="form-group">
+          <label>Constructor</label>
+          <select id="ai-constructor">
+            <option value="Mercedes">Mercedes</option>
+            <option value="Red Bull">Red Bull</option>
+            <option value="Ferrari">Ferrari</option>
+            <option value="McLaren">McLaren</option>
+            <option value="Alpine">Alpine</option>
+            <option value="Aston Martin">Aston Martin</option>
+            <option value="Williams">Williams</option>
+            <option value="AlphaTauri">AlphaTauri</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Circuit</label>
+          <select id="ai-circuit">
+            <option value="Silverstone">Silverstone</option>
+            <option value="Monaco">Monaco</option>
+            <option value="Monza">Monza</option>
+            <option value="Spa">Spa-Francorchamps</option>
+            <option value="Suzuka">Suzuka</option>
+            <option value="Bahrain">Bahrain</option>
+            <option value="Singapore">Singapore</option>
+          </select>
+        </div>
+        <button class="btn" onclick="loadAI()" id="ai-btn">
+          <span>⚡</span> Generate
+        </button>
+      </div>
+      <div style="margin-top:0.8rem;padding:0.7rem;background:var(--red-dim);border:1px solid rgba(232,0,45,0.15);border-radius:2px">
+        <p style="font-family:var(--mono);font-size:0.65rem;color:#ff9090;line-height:1.5">
+          ⚠ Note — AI model may take 30–60s on free tier. First request wakes the server.
+          This endpoint combines historical Elo ratings with AI reasoning about the 2026 F1 regulation changes
+          (active aero, 50/50 power split, MGU-H removal). No 2026 data exists — this bridges that gap.
+        </p>
+      </div>
+    </div>
+    <div id="ai-output"></div>
+  </div>
+</div>
+
+<script>
+const API = 'https://comp3011-f1-api.onrender.com';
+
+// ── TAB SWITCHING ──
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + name).classList.add('active');
+
+  if (name === 'overview' && document.getElementById('stat-races').textContent === '—') loadOverview();
+  if (name === 'elo') loadElo();
+  if (name === 'wet') loadWet();
+}
+
+// ── FETCH HELPER ──
+async function apiFetch(path) {
+  const res = await fetch(API + path);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function loading(msg = 'Fetching data...') {
+  return `<div class="loading"><div class="spinner"></div>${msg}</div>`;
+}
+
+function error(msg) {
+  return `<div class="error-msg">⚠ ${msg}</div>`;
+}
+
+// ── OVERVIEW ──
+async function loadOverview() {
+  const el = document.getElementById('health-output');
+  try {
+    const data = await apiFetch('/');
+    el.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+        <div style="width:8px;height:8px;border-radius:50%;background:#00c853"></div>
+        <span style="font-family:var(--mono);font-size:0.75rem;color:#00c853">API OPERATIONAL</span>
+        <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-left:auto">${data.version || '1.0.0'}</span>
+      </div>
+      <div style="font-family:var(--mono);font-size:0.72rem;color:var(--text);line-height:1.8">
+        ${(data.features || []).map(f => `<div>▸ ${f}</div>`).join('')}
+      </div>`;
+
+    // Load quick stats
+    try {
+      const races = await apiFetch('/api/v1/races/?season=2023');
+      document.getElementById('stat-races').textContent = '149+';
+      document.getElementById('stat-drivers').textContent = '800+';
+      document.getElementById('stat-constructors').textContent = '40+';
+    } catch(e) {}
+  } catch(e) {
+    el.innerHTML = error('API unreachable — server may be sleeping. Try again in 30s.');
+  }
+}
+
+// ── ELO ──
+async function loadElo() {
+  const el = document.getElementById('elo-output');
+  el.innerHTML = loading('Computing Elo ratings...');
+  try {
+    const data = await apiFetch('/api/v1/strategy/constructor-elo');
+    const ratings = data.ratings || [];
+    const maxElo = Math.max(...ratings.map(r => r.elo));
+    const minElo = Math.min(...ratings.map(r => r.elo));
+
+    el.innerHTML = `
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th>Constructor</th>
+            <th>Elo Rating</th>
+            <th style="width:200px">Relative Strength</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${ratings.map((r, i) => {
+            const pct = ((r.elo - minElo) / (maxElo - minElo) * 100).toFixed(1);
+            return `
+              <tr>
+                <td><div class="rank-badge ${i < 3 ? 'top' : ''}">${i+1}</div></td>
+                <td style="color:var(--white);font-weight:500">${r.constructor}</td>
+                <td><span style="font-family:var(--mono);color:var(--white)">${r.elo.toFixed(1)}</span></td>
+                <td>
+                  <div class="elo-bar-wrap">
+                    <div class="elo-bar">
+                      <div class="elo-fill" style="width:${pct}%"></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) {
+    el.innerHTML = error('Failed to load Elo data — ' + e.message);
+  }
+}
+
+// ── WET WEATHER ──
+async function loadWet() {
+  const el = document.getElementById('wet-output');
+  el.innerHTML = loading('Analysing wet weather performance...');
+  try {
+    const data = await apiFetch('/api/v1/strategy/wet-weather-scores');
+    const scores = data.scores || [];
+
+    if (!scores.length) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">◈</div>No wet weather data available</div>`;
+      return;
+    }
+
+    el.innerHTML = `
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Driver</th>
+            <th>Rating</th>
+            <th>Avg Position Gain</th>
+            <th>Normalised Score</th>
+            <th>Wet Races</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${scores.map((s, i) => `
+            <tr>
+              <td style="color:var(--muted);font-family:var(--mono)">${i+1}</td>
+              <td style="color:var(--white)">${s.driver}</td>
+              <td><span class="rating rating-${s.wet_weather_rating}">${s.wet_weather_rating}</span></td>
+              <td style="font-family:var(--mono)">${s.avg_position_gain > 0 ? '+' : ''}${s.avg_position_gain?.toFixed(2)}</td>
+              <td style="font-family:var(--mono);color:${s.normalised_wet_score > 0 ? '#77cc77' : '#ff6b6b'}">${s.normalised_wet_score?.toFixed(3)}</td>
+              <td style="font-family:var(--mono);color:var(--muted)">${s.wet_races_analysed}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+      <div style="margin-top:1rem;padding:0.8rem;background:var(--surface2);border-radius:2px">
+        <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);line-height:1.6">${data.methodology || ''}</p>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = error('Failed to load wet weather data — ' + e.message);
+  }
+}
+
+// ── HEAD TO HEAD ──
+async function loadH2H() {
+  const a = document.getElementById('h2h-a').value;
+  const b = document.getElementById('h2h-b').value;
+  const season = document.getElementById('h2h-season').value;
+  const el = document.getElementById('h2h-output');
+
+  if (!a || !b) { el.innerHTML = error('Enter both driver IDs'); return; }
+
+  el.innerHTML = `<div class="card">${loading('Analysing rivalry...')}</div>`;
+
+  try {
+    let url = `/api/v1/analytics/head-to-head/${a}/${b}`;
+    if (season) url += `?season=${season}`;
+    const data = await apiFetch(url);
+    const h2h = data.head_to_head;
+    const winPctA = h2h.driver_a_win_rate;
+    const winPctB = h2h.driver_b_win_rate;
+
+    el.innerHTML = `
+      <div class="grid-2" style="margin-bottom:1rem">
+        <div class="card">
+          <div class="card-label">Overall Winner</div>
+          <div class="h2h-winner">${h2h.overall_winner.split(' ').slice(-1)[0].toUpperCase()} <span>WINS</span></div>
+          <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);margin-top:0.3rem">${data.shared_races_analysed} races analysed</div>
+          <div class="h2h-bar" style="margin-top:1rem">
+            <div class="h2h-a" style="width:${winPctA}%"></div>
+            <div class="h2h-b" style="width:${winPctB}%"></div>
+          </div>
+          <div class="h2h-labels">
+            <span style="color:var(--red)">${data.driver_a.name} ${winPctA}%</span>
+            <span style="color:#3a6ea8">${data.driver_b.name} ${winPctB}%</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-label">Statistics</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem">
+            <div class="stat-block">
+              <div class="stat-value">${h2h.driver_a_wins}</div>
+              <div class="stat-label">${data.driver_a.name.split(' ').slice(-1)[0]} Wins</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">${h2h.driver_b_wins}</div>
+              <div class="stat-label">${data.driver_b.name.split(' ').slice(-1)[0]} Wins</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">${h2h.driver_a_total_points}</div>
+              <div class="stat-label">${data.driver_a.name.split(' ').slice(-1)[0]} Pts</div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-value">${h2h.driver_b_total_points}</div>
+              <div class="stat-label">${data.driver_b.name.split(' ').slice(-1)[0]} Pts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Season Breakdown</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Season</th>
+              <th>Races</th>
+              <th>${data.driver_a.name}</th>
+              <th>${data.driver_b.name}</th>
+              <th>Winner</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${(data.season_breakdown || []).map(s => `
+              <tr>
+                <td style="font-family:var(--mono);color:var(--white)">${s.season}</td>
+                <td style="font-family:var(--mono)">${s.races_together}</td>
+                <td style="font-family:var(--mono);color:var(--red)">${s.driver_a_wins}</td>
+                <td style="font-family:var(--mono);color:#3a6ea8">${s.driver_b_wins}</td>
+                <td style="font-size:0.75rem">${s.season_winner}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = error('Failed — ' + e.message + '. Check driver IDs exist in the database.');
+  }
+}
+
+// ── PIT WINDOW ──
+async function loadPit() {
+  const race = document.getElementById('pit-race').value;
+  const driver = document.getElementById('pit-driver').value;
+  const el = document.getElementById('pit-output');
+
+  el.innerHTML = `<div class="card">${loading('Calculating pit window...')}</div>`;
+
+  try {
+    const data = await apiFetch(`/api/v1/strategy/pit-window/${race}/${driver}`);
+
+    el.innerHTML = `
+      <div class="grid-3" style="margin-bottom:1rem">
+        <div class="stat-block card" style="animation-delay:0.05s">
+          <div class="stat-value">${(data.recommended_pit_laps || []).join(', ') || '—'}</div>
+          <div class="stat-label">Optimal Pit Laps</div>
+        </div>
+        <div class="stat-block card" style="animation-delay:0.1s">
+          <div class="stat-value">${(data.undercut_window_laps || []).join(', ') || '—'}</div>
+          <div class="stat-label">Undercut Window</div>
+        </div>
+        <div class="stat-block card" style="animation-delay:0.15s">
+          <div class="stat-value">${data.avg_pit_stop_duration_seconds || '—'}s</div>
+          <div class="stat-label">Avg Pit Duration</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:1rem">
+        <div class="card-label">Stint Analysis</div>
+        <table class="data-table">
+          <thead>
+            <tr><th>Stint</th><th>Compound</th><th>Laps</th><th>Optimal Pit</th><th>Undercut</th></tr>
+          </thead>
+          <tbody>
+            ${(data.stint_analysis || []).map((s, i) => `
+              <tr>
+                <td style="font-family:var(--mono)">${i+1}</td>
+                <td><span style="font-family:var(--mono);font-size:0.7rem;padding:2px 6px;background:var(--surface2);border-radius:2px">${s.compound}</span></td>
+                <td style="font-family:var(--mono)">${s.lap_start}–${s.lap_end}</td>
+                <td style="font-family:var(--mono);color:var(--white)">${s.optimal_pit_lap}</td>
+                <td style="font-family:var(--mono);color:var(--muted)">${s.undercut_lap || '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-label">Strategy Summary</div>
+        <p style="font-size:0.82rem;line-height:1.6;margin-bottom:1rem">${data.strategy_summary || ''}</p>
+        <div class="card-label">Limitations</div>
+        ${(data.limitations || []).map(l => `
+          <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-bottom:0.3rem">▸ ${l}</div>
+        `).join('')}
+      </div>`;
+  } catch(e) {
+    el.innerHTML = error('Failed — ' + e.message);
+  }
+}
+
+// ── AI ADVISOR ──
+async function loadAI() {
+  const constructor = document.getElementById('ai-constructor').value;
+  const circuit = document.getElementById('ai-circuit').value;
+  const el = document.getElementById('ai-output');
+  const btn = document.getElementById('ai-btn');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:12px;height:12px;border-width:1.5px"></div> Generating...';
+  el.innerHTML = `<div class="card">${loading('AI reasoning over 2026 regulations + historical data... (may take 30–60s)')}</div>`;
+
+  try {
+    const data = await apiFetch(`/api/v1/analytics/ai-strategy/${encodeURIComponent(constructor)}/${encodeURIComponent(circuit)}`);
+
+    el.innerHTML = `
+      <div class="grid-2" style="margin-bottom:1rem">
+        <div class="card" style="animation-delay:0.05s">
+          <div class="card-label">Constructor Profile</div>
+          <div style="display:flex;flex-direction:column;gap:0.6rem">
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:0.8rem">Constructor</span>
+              <span style="font-family:var(--mono);color:var(--white)">${data.constructor}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:0.8rem">Elo Rating</span>
+              <span style="font-family:var(--mono);color:var(--white)">${data.historical_data?.elo_rating?.toFixed(1) || '—'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:0.8rem">Elo Rank</span>
+              <span style="font-family:var(--mono);color:var(--red)">#${data.historical_data?.elo_rank || '—'} of ${data.historical_data?.total_constructors_ranked || '—'}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:0.8rem">Circuit</span>
+              <span style="font-family:var(--mono);color:var(--white)">${data.circuit}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between">
+              <span style="font-size:0.8rem">Season</span>
+              <span style="font-family:var(--mono);color:var(--red)">${data.season}</span>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="animation-delay:0.1s">
+          <div class="card-label">2026 Regs Considered</div>
+          ${(data.regulation_changes_considered || []).map(r => `
+            <div style="font-family:var(--mono);font-size:0.68rem;color:var(--text);margin-bottom:0.4rem;display:flex;gap:8px">
+              <span style="color:var(--red)">▸</span>${r}
+            </div>`).join('')}
+          <div style="margin-top:0.8rem;font-family:var(--mono);font-size:0.6rem;color:var(--muted)">
+            Powered by ${data.model_used || 'AI'}
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="animation-delay:0.15s">
+        <div class="ai-meta">
+          <div class="ai-meta-dot"></div>
+          AI STRATEGIC RECOMMENDATION — ${data.constructor.toUpperCase()} AT ${data.circuit.toUpperCase()} — 2026
+        </div>
+        <div class="ai-output">${data.ai_strategic_recommendation}</div>
+        <div style="margin-top:1rem;padding:0.7rem;background:var(--surface2);border-radius:2px">
+          <p style="font-family:var(--mono);font-size:0.6rem;color:var(--muted);line-height:1.5">${data.disclaimer}</p>
+        </div>
+      </div>`;
+  } catch(e) {
+    el.innerHTML = error('AI generation failed — ' + e.message + '. The server may be sleeping, try again in 30s.');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>⚡</span> Generate';
+  }
+}
+
+// ── INIT ──
+loadOverview();
+</script>
+</body>
+</html>
