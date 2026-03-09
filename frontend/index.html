@@ -5,253 +5,199 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>F1 Strategic Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #f0f2f5;
-  --surface: #ffffff;
-  --surface2: #f7f8fa;
-  --surface3: #eef0f4;
-  --border: #e2e6ed;
-  --border2: #d0d5de;
-  --red: #e8002d;
-  --red-light: #fff0f3;
-  --red-mid: rgba(232,0,45,0.12);
-  --blue: #0066ff;
-  --blue-light: #e8f0ff;
-  --dark: #0d1117;
-  --dark2: #161b22;
-  --text: #1a1d23;
-  --text2: #4a5568;
-  --muted: #8a94a6;
-  --white: #ffffff;
-  --green: #00b341;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
-  --orbitron: 'Orbitron', sans-serif;
-  --inter: 'Inter', sans-serif;
-  --mono: 'JetBrains Mono', monospace;
+  --bg:#f0f2f5; --surface:#fff; --surface2:#f7f8fa; --surface3:#eef0f4;
+  --border:#e2e6ed; --border2:#d0d5de;
+  --red:#e8002d; --red-light:#fff0f3; --red-mid:rgba(232,0,45,0.1);
+  --dark:#0d1117; --dark2:#161b22;
+  --text:#1a1d23; --text2:#4a5568; --muted:#8a94a6;
+  --green:#00b341; --blue:#2563eb; --amber:#d97706;
+  --shadow:0 1px 3px rgba(0,0,0,0.07),0 4px 12px rgba(0,0,0,0.04);
+  --font:'Inter',sans-serif; --mono:'JetBrains Mono',monospace; --display:'Orbitron',sans-serif;
 }
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:var(--bg); color:var(--text); font-family:var(--inter); min-height:100vh; overflow-x:hidden; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;overflow-x:hidden}
 
-header {
-  background:var(--dark);
-  height:60px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 2rem;
-  position:sticky;
-  top:0;
-  z-index:200;
-  border-bottom:1px solid rgba(255,255,255,0.06);
-}
-.logo { display:flex; align-items:center; gap:12px; }
-.logo-icon {
-  width:32px; height:32px;
-  background:var(--red);
-  clip-path:polygon(0 0,100% 0,100% 65%,65% 100%,0 100%);
-  position:relative; flex-shrink:0;
-}
-.logo-icon::after {
-  content:'';
-  position:absolute;
-  inset:3px;
-  background:var(--dark);
-  clip-path:polygon(0 0,100% 0,100% 60%,60% 100%,0 100%);
-}
-.logo-name { font-family:var(--orbitron); font-size:0.85rem; font-weight:700; color:#fff; letter-spacing:0.1em; }
-.logo-sub { font-family:var(--mono); font-size:0.55rem; color:rgba(255,255,255,0.3); letter-spacing:0.15em; margin-top:1px; }
-.api-badge {
-  display:flex; align-items:center; gap:6px;
-  background:rgba(0,179,65,0.15); border:1px solid rgba(0,179,65,0.3);
-  border-radius:20px; padding:4px 10px;
-  font-family:var(--mono); font-size:0.6rem; color:var(--green); letter-spacing:0.1em;
-}
-.api-dot { width:5px; height:5px; border-radius:50%; background:var(--green); animation:blink 2s infinite; }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* HEADER */
+header{background:var(--dark);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.05)}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:30px;height:30px;background:var(--red);clip-path:polygon(0 0,100% 0,100% 65%,65% 100%,0 100%);position:relative;flex-shrink:0}
+.logo-mark::after{content:'';position:absolute;inset:3px;background:var(--dark);clip-path:polygon(0 0,100% 0,100% 60%,60% 100%,0 100%)}
+.logo-text{font-family:var(--display);font-size:0.82rem;font-weight:700;color:#fff;letter-spacing:0.1em}
+.logo-sub{font-family:var(--mono);font-size:0.52rem;color:rgba(255,255,255,0.28);letter-spacing:0.15em;margin-top:1px}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(0,179,65,0.15);border:1px solid rgba(0,179,65,0.3);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:0.6rem;color:var(--green);letter-spacing:0.1em}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 
-nav {
-  background:var(--dark2);
-  border-bottom:1px solid rgba(255,255,255,0.05);
-  padding:0 2rem;
-  display:flex;
-  overflow-x:auto;
-  scrollbar-width:none;
-}
-nav::-webkit-scrollbar { display:none; }
-.tab {
-  padding:0 1.4rem; height:44px;
-  font-family:var(--mono); font-size:0.65rem; letter-spacing:0.12em; text-transform:uppercase;
-  color:rgba(255,255,255,0.35); cursor:pointer; border:none; background:none;
-  white-space:nowrap; border-bottom:2px solid transparent; transition:all 0.2s;
-  display:flex; align-items:center; gap:7px;
-}
-.tab:hover { color:rgba(255,255,255,0.7); }
-.tab.active { color:#fff; border-bottom-color:var(--red); }
+/* NAV */
+nav{background:var(--dark2);border-bottom:1px solid rgba(255,255,255,0.05);padding:0 2rem;display:flex;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.tab{padding:0 1.3rem;height:44px;font-family:var(--mono);font-size:0.63rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.35);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all 0.2s;display:flex;align-items:center;gap:7px}
+.tab:hover{color:rgba(255,255,255,0.65)}
+.tab.active{color:#fff;border-bottom-color:var(--red)}
 
-.container { max-width:1200px; margin:0 auto; padding:2rem; }
-.panel { display:none; }
-.panel.active { display:block; }
+/* LAYOUT */
+.container{max-width:1200px;margin:0 auto;padding:2rem}
+.panel{display:none}.panel.active{display:block}
+@keyframes up{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade{opacity:0;animation:up 0.35s ease forwards}
+.d1{animation-delay:.06s}.d2{animation-delay:.12s}.d3{animation-delay:.18s}.d4{animation-delay:.24s}
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.fade { opacity:0; animation:fadeUp 0.35s ease forwards; }
-.d1{animation-delay:0.05s} .d2{animation-delay:0.1s} .d3{animation-delay:0.15s} .d4{animation-delay:0.2s}
+/* PAGE TITLE */
+.page-title{margin-bottom:1.5rem;opacity:0;animation:up 0.3s ease forwards}
+.page-title h1{font-family:var(--display);font-size:1.45rem;font-weight:700;color:var(--dark);letter-spacing:0.05em;margin-bottom:3px}
+.page-title p{font-family:var(--mono);font-size:0.67rem;color:var(--muted)}
 
-.page-title { margin-bottom:1.5rem; opacity:0; animation:fadeUp 0.35s ease forwards; }
-.page-title h1 { font-family:var(--orbitron); font-size:1.5rem; font-weight:700; color:var(--dark); letter-spacing:0.05em; margin-bottom:4px; }
-.page-title p { font-family:var(--mono); font-size:0.68rem; color:var(--muted); }
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.25rem 1.5rem;box-shadow:var(--shadow)}
+.card+.card{margin-top:1rem}
+.ctitle{font-family:var(--mono);font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:1.1rem}
+.ctitle::before{content:'';width:3px;height:11px;background:var(--red);border-radius:2px;flex-shrink:0}
 
-.card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.25rem 1.5rem; box-shadow:var(--shadow); }
-.card-title {
-  font-family:var(--mono); font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase;
-  color:var(--muted); display:flex; align-items:center; gap:8px;
-}
-.card-title::before { content:''; width:3px; height:12px; background:var(--red); border-radius:2px; }
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+@media(max-width:900px){.g3,.g4{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr}}
 
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-.grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
-@media(max-width:900px) { .grid-3{grid-template-columns:1fr 1fr} }
-@media(max-width:600px) { .grid-2,.grid-3{grid-template-columns:1fr} }
+/* FORMS */
+.frow{display:flex;gap:.75rem;align-items:flex-end;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:130px}
+label{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+input,select{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:0.54rem 0.8rem;font-family:var(--font);font-size:0.82rem;border-radius:7px;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+input:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 3px var(--red-mid)}
 
-.form-row { display:flex; gap:0.75rem; align-items:flex-end; flex-wrap:wrap; margin-bottom:1.2rem; }
-.form-group { display:flex; flex-direction:column; gap:5px; flex:1; min-width:140px; }
-label { font-family:var(--mono); font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); }
-input, select {
-  background:var(--surface2); border:1.5px solid var(--border);
-  color:var(--text); padding:0.55rem 0.8rem;
-  font-family:var(--inter); font-size:0.82rem;
-  border-radius:6px; outline:none;
-  transition:border-color 0.15s,box-shadow 0.15s; width:100%;
-}
-input:focus, select:focus { border-color:var(--red); box-shadow:0 0 0 3px var(--red-mid); }
+/* BUTTON */
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--red);color:#fff;border:none;padding:.56rem 1.3rem;font-family:var(--display);font-size:0.58rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:all .15s;white-space:nowrap}
+.btn:hover{background:#c8001f;transform:translateY(-1px);box-shadow:0 4px 14px rgba(232,0,45,0.28)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-sm{padding:.38rem .9rem;font-size:.53rem}
 
-.btn {
-  display:inline-flex; align-items:center; gap:6px;
-  background:var(--red); color:#fff; border:none;
-  padding:0.58rem 1.4rem;
-  font-family:var(--orbitron); font-size:0.6rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase;
-  cursor:pointer; border-radius:6px; transition:all 0.15s; white-space:nowrap;
-}
-.btn:hover { background:#cc0026; transform:translateY(-1px); box-shadow:0 4px 12px rgba(232,0,45,0.3); }
-.btn:active { transform:translateY(0); }
-.btn:disabled { opacity:0.45; cursor:not-allowed; transform:none; box-shadow:none; }
-.btn-sm { padding:0.4rem 0.9rem; font-size:0.55rem; }
+/* LOADING / ERROR */
+.loading{display:flex;align-items:center;gap:10px;padding:2.5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted);justify-content:center}
+.spin{width:17px;height:17px;border:2px solid var(--border2);border-top-color:var(--red);border-radius:50%;animation:rot .6s linear infinite;flex-shrink:0}
+@keyframes rot{to{transform:rotate(360deg)}}
+.err-box{background:#fff0f3;border:1px solid rgba(232,0,45,0.25);color:#9b1c1c;border-radius:7px;padding:.75rem 1rem;font-family:var(--mono);font-size:.7rem;margin-top:.5rem}
+.empty{text-align:center;padding:3rem;color:var(--muted);font-family:var(--mono);font-size:.72rem}
 
-.loading { display:flex; align-items:center; gap:10px; padding:2.5rem; font-family:var(--mono); font-size:0.72rem; color:var(--muted); justify-content:center; }
-.spin { width:18px; height:18px; border:2px solid var(--border2); border-top-color:var(--red); border-radius:50%; animation:spin 0.6s linear infinite; }
-@keyframes spin { to{transform:rotate(360deg)} }
+/* NOTICE */
+.notice{border-radius:7px;padding:.65rem 1rem;font-family:var(--mono);font-size:.63rem;line-height:1.6}
+.notice.info{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af}
+.notice.warn{background:#fffbeb;border:1px solid #fde68a;color:#92400e}
+.notice.danger{background:#fff0f3;border:1px solid rgba(232,0,45,0.2);color:#9b1c1c}
 
-.tbl { width:100%; border-collapse:collapse; font-size:0.82rem; }
-.tbl th { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--muted); text-align:left; padding:0.5rem 0.9rem; border-bottom:2px solid var(--border); background:var(--surface2); }
-.tbl td { padding:0.75rem 0.9rem; border-bottom:1px solid var(--border); color:var(--text2); vertical-align:middle; }
-.tbl tr:last-child td { border-bottom:none; }
-.tbl tr:hover td { background:var(--surface2); }
-.tbl td.bold { color:var(--text); font-weight:600; }
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.81rem}
+.tbl th{font-family:var(--mono);font-size:.57rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-align:left;padding:.5rem .9rem;border-bottom:2px solid var(--border);background:var(--surface2)}
+.tbl td{padding:.72rem .9rem;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--surface2)}
+.bold{color:var(--text)!important;font-weight:600}
 
-.rank { width:26px; height:26px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:0.65rem; font-weight:600; background:var(--surface3); color:var(--muted); }
-.rank.gold { background:#fef3c7; color:#b45309; }
-.rank.silver { background:#f1f5f9; color:#475569; }
-.rank.bronze { background:#fef0e6; color:#c2410c; }
+/* RANK BADGE */
+.rank{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.63rem;font-weight:600;background:var(--surface3);color:var(--muted)}
+.rank.g{background:#fef3c7;color:#b45309}
+.rank.s{background:#f1f5f9;color:#475569}
+.rank.b{background:#fef0e6;color:#c2410c}
 
-.elo-bar { height:5px; background:var(--surface3); border-radius:3px; overflow:hidden; min-width:80px; }
-.elo-fill { height:100%; background:linear-gradient(90deg,var(--red),#ff6b6b); border-radius:3px; transition:width 1s cubic-bezier(0.16,1,0.3,1); }
+/* ELO BAR */
+.elo-bar{height:5px;background:var(--surface3);border-radius:3px;overflow:hidden;flex:1}
+.elo-fill{height:100%;background:linear-gradient(90deg,var(--red),#ff6b6b);border-radius:3px;transition:width 1s cubic-bezier(.16,1,.3,1)}
 
-.chip { display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px; font-family:var(--mono); font-size:0.6rem; font-weight:600; letter-spacing:0.05em; }
-.chip-elite { background:#fee2e2; color:#991b1b; }
-.chip-strong { background:#fef3c7; color:#92400e; }
-.chip-average { background:#d1fae5; color:#065f46; }
-.chip-weak { background:var(--surface3); color:var(--muted); }
+/* CHIP */
+.chip{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-family:var(--mono);font-size:.59rem;font-weight:600;letter-spacing:.04em}
+.c-elite{background:#fee2e2;color:#991b1b}
+.c-strong{background:#fef3c7;color:#92400e}
+.c-average{background:#d1fae5;color:#065f46}
+.c-weak{background:var(--surface3);color:var(--muted)}
 
-.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:1.2rem; box-shadow:var(--shadow); }
-.stat-num { font-family:var(--orbitron); font-size:1.8rem; font-weight:700; color:var(--dark); line-height:1; margin-bottom:4px; }
-.stat-num.red { color:var(--red); }
-.stat-lbl { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); }
+/* STAT CARD */
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.2rem;box-shadow:var(--shadow)}
+.snum{font-family:var(--display);font-size:1.75rem;font-weight:700;color:var(--dark);line-height:1;margin-bottom:4px}
+.snum.r{color:var(--red)}
+.snum.b{color:var(--blue)}
+.slbl{font-family:var(--mono);font-size:.57rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 
-.ai-box {
-  background:var(--dark); border-radius:8px; padding:1.5rem;
-  color:rgba(255,255,255,0.85); font-size:0.83rem; line-height:1.8;
-  white-space:pre-wrap; font-family:var(--inter);
-  border-left:3px solid var(--red); position:relative; overflow:hidden;
-}
-.ai-box::before {
-  content:''; position:absolute; top:0; right:0;
-  width:200px; height:200px;
-  background:radial-gradient(circle,rgba(232,0,45,0.06) 0%,transparent 70%);
-  pointer-events:none;
-}
-.ai-tag {
-  display:inline-flex; align-items:center; gap:6px;
-  background:var(--red-light); color:var(--red);
-  border:1px solid rgba(232,0,45,0.2); border-radius:20px;
-  padding:3px 10px; font-family:var(--mono); font-size:0.58rem;
-  letter-spacing:0.1em; margin-bottom:1rem; font-weight:600;
-}
-.ai-dot { width:5px; height:5px; border-radius:50%; background:var(--red); animation:blink 1.5s infinite; }
-
-.winner-banner {
-  background:linear-gradient(135deg,var(--dark) 0%,var(--dark2) 100%);
-  border-radius:8px; padding:1.5rem; text-align:center;
-  border:1px solid rgba(255,255,255,0.06);
-}
-.winner-label { font-family:var(--mono); font-size:0.6rem; color:rgba(255,255,255,0.3); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.5rem; }
-.winner-name { font-family:var(--orbitron); font-size:1.6rem; font-weight:900; color:#fff; letter-spacing:0.05em; }
-.winner-name em { color:var(--red); font-style:normal; }
-
-.h2h-bar-track { height:10px; background:var(--surface3); border-radius:5px; overflow:hidden; display:flex; margin:0.8rem 0 0.4rem; }
-.h2h-seg-a { background:var(--red); transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
-.h2h-seg-b { background:#3b82f6; transition:width 0.8s cubic-bezier(0.16,1,0.3,1); }
-.h2h-labels { display:flex; justify-content:space-between; font-family:var(--mono); font-size:0.65rem; }
-
-.notice { border-radius:6px; padding:0.7rem 1rem; font-family:var(--mono); font-size:0.65rem; line-height:1.6; }
-.notice.warn { background:#fffbeb; border:1px solid #fde68a; color:#92400e; }
-.notice.info { background:var(--blue-light); border:1px solid #bfdbfe; color:#1e40af; }
-.notice.danger { background:var(--red-light); border:1px solid rgba(232,0,45,0.2); color:#991b1b; }
-
-.err { background:var(--red-light); border:1px solid rgba(232,0,45,0.2); color:#991b1b; border-radius:6px; padding:0.8rem 1rem; font-family:var(--mono); font-size:0.72rem; margin-top:0.5rem; }
-.empty { text-align:center; padding:3rem; color:var(--muted); font-family:var(--mono); font-size:0.72rem; }
-
-hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
-.tip { font-family:var(--mono); font-size:0.6rem; color:var(--muted); margin-top:0.5rem; }
-.tip a { color:var(--red); text-decoration:none; }
-.season-tag { background:var(--surface2); border:1px solid var(--border); color:var(--text2); border-radius:4px; padding:2px 7px; font-family:var(--mono); font-size:0.62rem; }
+/* H2H */
+.versus-banner{background:linear-gradient(135deg,var(--dark),var(--dark2));border-radius:10px;padding:1.5rem;text-align:center;border:1px solid rgba(255,255,255,0.06)}
+.versus-title{font-family:var(--mono);font-size:.58rem;color:rgba(255,255,255,.28);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem}
+.versus-winner{font-family:var(--display);font-size:1.7rem;font-weight:900;color:#fff;letter-spacing:.04em}
+.versus-winner em{color:var(--red);font-style:normal}
+.h2h-track{height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden;display:flex;margin:.75rem 0 .4rem}
+.h2h-a{background:var(--red);transition:width .8s cubic-bezier(.16,1,.3,1)}
+.h2h-b{background:#3b82f6;transition:width .8s cubic-bezier(.16,1,.3,1)}
+.h2h-labels{display:flex;justify-content:space-between;font-family:var(--mono);font-size:.63rem}
+.season-tag{background:var(--surface2);border:1px solid var(--border);color:var(--text2);border-radius:4px;padding:2px 7px;font-family:var(--mono);font-size:.61rem}
 
 /* HERO */
-.hero { background:var(--dark); border-radius:12px; padding:3rem; margin-bottom:1.5rem; position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.05); }
-.hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(232,0,45,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(232,0,45,0.04) 1px,transparent 1px); background-size:40px 40px; }
-.hero-glow { position:absolute; top:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(232,0,45,0.12) 0%,transparent 70%); pointer-events:none; }
-.hero-content { position:relative; }
-.hero-eyebrow { font-family:var(--mono); font-size:0.62rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--red); margin-bottom:0.8rem; }
-.hero h1 { font-family:var(--orbitron); font-size:clamp(1.8rem,4vw,3rem); font-weight:900; color:#fff; line-height:1.05; letter-spacing:0.03em; margin-bottom:1rem; }
-.hero h1 span { color:var(--red); }
-.hero p { color:rgba(255,255,255,0.5); font-size:0.85rem; line-height:1.7; max-width:480px; }
-.hero-stats { display:flex; gap:2.5rem; margin-top:2rem; flex-wrap:wrap; }
-.hero-stat-num { font-family:var(--orbitron); font-size:1.5rem; font-weight:700; color:#fff; line-height:1; }
-.hero-stat-lbl { font-family:var(--mono); font-size:0.58rem; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:3px; }
-.hdiv { width:1px; background:rgba(255,255,255,0.08); align-self:stretch; }
+.hero{background:var(--dark);border-radius:12px;padding:2.5rem 3rem;margin-bottom:1.5rem;position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(232,0,45,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(232,0,45,.035) 1px,transparent 1px);background-size:40px 40px}
+.hero-glow{position:absolute;top:-60px;right:-60px;width:320px;height:320px;background:radial-gradient(circle,rgba(232,0,45,.1) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative}
+.hero-eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:.75rem}
+.hero h1{font-family:var(--display);font-size:clamp(1.8rem,4vw,2.9rem);font-weight:900;color:#fff;line-height:1.05;letter-spacing:.03em;margin-bottom:.9rem}
+.hero h1 span{color:var(--red)}
+.hero p{color:rgba(255,255,255,.45);font-size:.84rem;line-height:1.7;max-width:460px}
+.hero-stats{display:flex;gap:2.5rem;margin-top:2rem;flex-wrap:wrap;align-items:center}
+.hstat-num{font-family:var(--display);font-size:1.5rem;font-weight:700;color:#fff;line-height:1}
+.hstat-lbl{font-family:var(--mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:2px}
+.hdiv{width:1px;height:36px;background:rgba(255,255,255,.08)}
 
-.feature-item { display:flex; align-items:flex-start; gap:10px; padding:0.9rem; background:var(--surface2); border-radius:8px; border:1px solid var(--border); transition:border-color 0.15s; }
-.feature-item:hover { border-color:var(--red); }
-.fdot { width:8px; height:8px; border-radius:50%; background:var(--red); margin-top:4px; flex-shrink:0; }
-.fname { font-size:0.8rem; font-weight:600; color:var(--text); margin-bottom:2px; }
-.fdesc { font-size:0.7rem; color:var(--muted); }
+/* AI SECTION */
+.ai-header-bar{display:flex;align-items:center;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap}
+.ai-badge{display:inline-flex;align-items:center;gap:6px;background:var(--red-light);border:1px solid rgba(232,0,45,.2);border-radius:20px;padding:4px 12px;font-family:var(--mono);font-size:.58rem;letter-spacing:.1em;color:var(--red);font-weight:600}
+.ai-badge-dot{width:5px;height:5px;border-radius:50%;background:var(--red);animation:blink 1.5s infinite}
+.ai-context{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ai-ctx-item{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:3px 10px;font-family:var(--mono);font-size:.6rem;color:var(--text2)}
+.ai-ctx-item strong{color:var(--text);font-weight:600}
 
-::-webkit-scrollbar { width:5px; height:5px; }
-::-webkit-scrollbar-track { background:var(--bg); }
-::-webkit-scrollbar-thumb { background:var(--border2); border-radius:3px; }
+/* AI CONTENT PARSED */
+.ai-section{margin-bottom:1.4rem}
+.ai-section:last-child{margin-bottom:0}
+.ai-section-title{font-family:var(--display);font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--red);text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:8px}
+.ai-section-title::before{content:'';width:3px;height:14px;background:var(--red);border-radius:2px;flex-shrink:0}
+.ai-section-body{font-size:.82rem;line-height:1.75;color:var(--text2)}
+.ai-section-body p{margin-bottom:.5rem}
+.ai-section-body p:last-child{margin-bottom:0}
+.ai-bullet{display:flex;align-items:flex-start;gap:8px;margin-bottom:.4rem;font-size:.8rem;color:var(--text2)}
+.ai-bullet::before{content:'▸';color:var(--red);font-size:.7rem;margin-top:2px;flex-shrink:0}
+.ai-confidence{display:inline-flex;align-items:center;gap:8px;padding:.5rem 1rem;border-radius:8px;font-family:var(--mono);font-size:.7rem;font-weight:600;margin-bottom:.6rem}
+.conf-high{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.conf-medium{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+.conf-low{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.ai-raw{background:var(--dark);border-radius:8px;padding:1.4rem;color:rgba(255,255,255,.82);font-size:.8rem;line-height:1.8;font-family:var(--font);border-left:3px solid var(--red);white-space:pre-wrap}
+
+hr{border:none;border-top:1px solid var(--border);margin:1.1rem 0}
+.tip{font-family:var(--mono);font-size:.59rem;color:var(--muted);margin-top:.5rem}
+.tip a{color:var(--red);text-decoration:none}
+
+/* FEATURE CARDS */
+.feat{display:flex;align-items:flex-start;gap:10px;padding:.85rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border);transition:border-color .15s,background .15s;cursor:default}
+.feat:hover{border-color:rgba(232,0,45,.35);background:var(--red-light)}
+.feat-dot{width:8px;height:8px;border-radius:50%;background:var(--red);margin-top:4px;flex-shrink:0}
+.feat-name{font-size:.79rem;font-weight:600;color:var(--text);margin-bottom:2px}
+.feat-desc{font-size:.69rem;color:var(--muted)}
+
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <div class="logo-icon"></div>
+    <div class="logo-mark"></div>
     <div>
-      <div class="logo-name">F1 INTELLIGENCE</div>
+      <div class="logo-text">F1 INTELLIGENCE</div>
       <div class="logo-sub">Strategic Analysis Platform · 2026</div>
     </div>
   </div>
-  <div class="api-badge"><div class="api-dot"></div>API LIVE</div>
+  <div class="live-pill"><div class="live-dot"></div>API LIVE</div>
 </header>
 
 <nav>
@@ -263,100 +209,88 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
   <button class="tab" onclick="switchTab('ai',this)">⚡ AI Advisor 2026</button>
 </nav>
 
-<!-- OVERVIEW -->
+<!-- ═══ OVERVIEW ═══ -->
 <div id="panel-overview" class="panel active">
   <div class="container">
+
     <div class="hero fade">
       <div class="hero-grid"></div>
       <div class="hero-glow"></div>
-      <div class="hero-content">
+      <div class="hero-inner">
         <div class="hero-eyebrow">COMP3011 · University of Leeds · 2026</div>
         <h1>F1 STRATEGIC<br><span>INTELLIGENCE</span></h1>
-        <p>A RESTful API providing Formula 1 race strategy intelligence and analytics. Built with FastAPI, PostgreSQL, JWT authentication, and real race data.</p>
+        <p>A RESTful API providing Formula 1 race strategy intelligence and analytics. Built with FastAPI, PostgreSQL, JWT auth, and real race data from 2023–2024.</p>
         <div class="hero-stats">
-          <div><div class="hero-stat-num">149+</div><div class="hero-stat-lbl">Races</div></div>
+          <div><div class="hstat-num">149+</div><div class="hstat-lbl">Races</div></div>
           <div class="hdiv"></div>
-          <div><div class="hero-stat-num">800+</div><div class="hero-stat-lbl">Drivers</div></div>
+          <div><div class="hstat-num">800+</div><div class="hstat-lbl">Drivers</div></div>
           <div class="hdiv"></div>
-          <div><div class="hero-stat-num">2023–24</div><div class="hero-stat-lbl">Coverage</div></div>
+          <div><div class="hstat-num">2023–24</div><div class="hstat-lbl">Coverage</div></div>
           <div class="hdiv"></div>
-          <div><div class="hero-stat-num" id="stat-api" style="font-size:0.85rem;color:rgba(255,255,255,0.35)">Checking...</div><div class="hero-stat-lbl">API Status</div></div>
+          <div><div class="hstat-num" id="stat-api" style="font-size:.82rem;color:rgba(255,255,255,.3)">Checking…</div><div class="hstat-lbl">API Status</div></div>
         </div>
       </div>
     </div>
 
-    <div class="grid-2" style="margin-bottom:1rem">
+    <div class="g2" style="margin-bottom:1rem">
       <div class="card fade d1">
-        <div class="card-title" style="margin-bottom:1rem">Intelligence Features</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem">
-          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Constructor ELO</div><div class="fdesc">Pairwise Elo across all results</div></div></div>
-          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Wet Weather</div><div class="fdesc">Normalised driver scoring</div></div></div>
-          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Head-to-Head</div><div class="fdesc">Direct rivalry analysis</div></div></div>
-          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Pit Window</div><div class="fdesc">Optimal stop calculator</div></div></div>
-          <div class="feature-item"><div class="fdot"></div><div><div class="fname">Tyre Model</div><div class="fdesc">Degradation regression</div></div></div>
-          <div class="feature-item" style="border-color:rgba(232,0,45,0.3);background:var(--red-light)">
-            <div class="fdot"></div>
-            <div><div class="fname" style="color:var(--red)">AI Advisor 2026</div><div class="fdesc">LLaMA + regulation data</div></div>
-          </div>
+        <div class="ctitle">Intelligence Features</div>
+        <div id="feature-grid" class="g2" style="gap:.6rem">
+          <!-- filled by JS -->
         </div>
       </div>
 
       <div class="card fade d2">
-        <div class="card-title" style="margin-bottom:1rem">Tech Stack</div>
-        <div style="display:flex;flex-direction:column;gap:0">
-          ${[['Framework','FastAPI + Python 3.11'],['Database','PostgreSQL (asyncpg)'],['ORM','SQLAlchemy async'],['Auth','JWT Bearer + Argon2'],['AI Provider','Groq / LLaMA 3.1'],['Deployment','Render'],['Testing','pytest · 120 tests · 79% cov'],['Pattern','Repository + MCP Compatible']].map(([k,v])=>`
-          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.55rem 0;border-bottom:1px solid var(--border)">
-            <span style="font-size:0.78rem;color:var(--text2)">${k}</span>
-            <span style="font-family:var(--mono);font-size:0.7rem;color:var(--text);font-weight:500">${v}</span>
-          </div>`).join('')}
-        </div>
+        <div class="ctitle">Tech Stack</div>
+        <div id="stack-table"></div>
       </div>
     </div>
 
     <div class="card fade d3">
-      <div class="card-title" style="margin-bottom:1rem">Data Sources</div>
-      <div class="grid-3">
-        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">Kaggle F1 Dataset</div>
-          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">Historical data 1950–2023. Results, pit stops, tyre stints, weather.</div>
+      <div class="ctitle">Data Sources</div>
+      <div class="g3">
+        <div style="padding:.9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.84rem">Kaggle F1 Dataset</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.55">Historical data 1950–2023 — results, pit stops, tyre stints, weather conditions.</div>
         </div>
-        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">Jolpica / Ergast</div>
-          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">2024 season race results and constructor standings.</div>
+        <div style="padding:.9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.84rem">Jolpica / Ergast</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.55">2024 season race results and constructor championship standings.</div>
         </div>
-        <div style="padding:1rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px;font-size:0.85rem">OpenF1 API</div>
-          <div style="font-size:0.72rem;color:var(--muted);line-height:1.5">Live tyre and weather telemetry for 2023–2024 seasons.</div>
+        <div style="padding:.9rem;background:var(--surface2);border-radius:8px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.84rem">OpenF1 API</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.55">Live tyre compound and weather telemetry for 2023–2024 seasons.</div>
         </div>
       </div>
       <div class="notice info" style="margin-top:1rem">
-        ⓘ Database seeded with 2023–2024 race data. Kaggle dataset (1950–2023) available for extended seeding via <code>scripts/seed_ergast.py</code>.
+        ⓘ Database currently seeded with 2023–2024 race data. Extended seeding from Kaggle (1950–2023) available via <code>scripts/seed_ergast.py</code>.
       </div>
     </div>
+
   </div>
 </div>
 
-<!-- ELO -->
+<!-- ═══ ELO ═══ -->
 <div id="panel-elo" class="panel">
   <div class="container">
     <div class="page-title">
       <h1>Constructor ELO</h1>
-      <p>// pairwise elo ratings — each constructor ranked once by most recent rating</p>
+      <p>// pairwise elo ratings — each constructor ranked once by highest rating</p>
     </div>
     <div class="card fade">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-        <div class="card-title">ELO Rankings</div>
+        <div class="ctitle" style="margin-bottom:0">ELO Rankings</div>
         <button class="btn btn-sm" onclick="loadElo()">↻ Refresh</button>
       </div>
       <div class="notice info" style="margin-bottom:1rem">
-        ⓘ Duplicates removed — each team appears once. Relative strength bar shows position between lowest and highest rated constructor.
+        ⓘ Only constructors with race results in the database appear. Unrecognised or historical team names show as 1500 (base rating). Each team is shown once — highest Elo entry kept.
       </div>
-      <div id="elo-output"><div class="loading"><div class="spin"></div>Loading rankings...</div></div>
+      <div id="elo-output"><div class="loading"><div class="spin"></div>Loading rankings…</div></div>
     </div>
   </div>
 </div>
 
-<!-- WET WEATHER -->
+<!-- ═══ WET WEATHER ═══ -->
 <div id="panel-wet" class="panel">
   <div class="container">
     <div class="page-title">
@@ -364,33 +298,33 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
       <p>// driver performance in rain — normalised for starting grid position</p>
     </div>
     <div class="card fade" style="margin-bottom:1rem">
-      <div class="card-title" style="margin-bottom:1rem">Scoring Methodology</div>
-      <div class="grid-3" style="font-size:0.78rem;gap:0.7rem">
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px">Position Gain</div>
-          <div style="color:var(--muted);font-size:0.72rem">Grid position minus finish position. Positive = moved forward through field in rain.</div>
+      <div class="ctitle">Scoring Methodology</div>
+      <div class="g3" style="gap:.7rem">
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.8rem">Position Gain</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.5">Grid minus finish position. Positive = moved forward in the rain.</div>
         </div>
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px">Normalised Score</div>
-          <div style="color:var(--muted);font-size:0.72rem">Adjusted for opportunity. Starting P20 can gain 19 places; starting P1 cannot gain any.</div>
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.8rem">Normalised Score</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.5">Adjusted for opportunity — P20 can gain 19 places; P1 cannot gain any.</div>
         </div>
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;margin-bottom:4px">Sample Caveat</div>
-          <div style="color:var(--muted);font-size:0.72rem">Drivers with fewer than 3 wet races show extreme scores. More races = more reliable rating.</div>
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;margin-bottom:4px;font-size:.8rem">Sample Caveat</div>
+          <div style="font-size:.71rem;color:var(--muted);line-height:1.5">Drivers with &lt;3 wet races show extreme scores. More races = more reliable.</div>
         </div>
       </div>
     </div>
     <div class="card fade d1">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
-        <div class="card-title">Driver Wet Scores</div>
+        <div class="ctitle" style="margin-bottom:0">Driver Wet Scores</div>
         <button class="btn btn-sm" onclick="loadWet()">↻ Refresh</button>
       </div>
-      <div id="wet-output"><div class="loading"><div class="spin"></div>Loading scores...</div></div>
+      <div id="wet-output"><div class="loading"><div class="spin"></div>Loading scores…</div></div>
     </div>
   </div>
 </div>
 
-<!-- HEAD TO HEAD -->
+<!-- ═══ HEAD TO HEAD ═══ -->
 <div id="panel-h2h" class="panel">
   <div class="container">
     <div class="page-title">
@@ -398,30 +332,30 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
       <p>// direct driver rivalry analysis across all shared race starts</p>
     </div>
     <div class="card fade" style="margin-bottom:1rem">
-      <div class="card-title" style="margin-bottom:1rem">Driver Selection</div>
-      <div class="form-row">
-        <div class="form-group">
+      <div class="ctitle">Driver Selection</div>
+      <div class="frow">
+        <div class="fg">
           <label>Driver A</label>
-          <select id="h2h-a-sel"><option value="">Loading drivers...</option></select>
+          <select id="h2h-a"><option value="">Loading drivers…</option></select>
         </div>
-        <div style="display:flex;align-items:flex-end;padding-bottom:0.6rem;font-weight:700;color:var(--muted)">VS</div>
-        <div class="form-group">
+        <div style="display:flex;align-items:flex-end;padding-bottom:.6rem;font-weight:700;color:var(--muted);font-size:.9rem">VS</div>
+        <div class="fg">
           <label>Driver B</label>
-          <select id="h2h-b-sel"><option value="">Loading drivers...</option></select>
+          <select id="h2h-b"><option value="">Loading drivers…</option></select>
         </div>
-        <div class="form-group" style="max-width:130px">
+        <div class="fg" style="max-width:130px">
           <label>Season (opt)</label>
-          <input type="number" id="h2h-season" placeholder="e.g. 2023" min="2019" max="2024">
+          <input type="number" id="h2h-season" placeholder="2023" min="2019" max="2024">
         </div>
         <button class="btn" onclick="loadH2H()">Analyse ⇄</button>
       </div>
-      <p class="tip">Drivers loaded from live API. Try Verstappen vs Hamilton for a rich dataset.</p>
+      <p class="tip">Drivers loaded from live API. Try Verstappen vs Hamilton for the richest dataset.</p>
     </div>
     <div id="h2h-output"></div>
   </div>
 </div>
 
-<!-- PIT WINDOW -->
+<!-- ═══ PIT WINDOW ═══ -->
 <div id="panel-pit" class="panel">
   <div class="container">
     <div class="page-title">
@@ -429,58 +363,58 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
       <p>// optimal pit stop laps based on tyre degradation regression models</p>
     </div>
     <div class="card fade" style="margin-bottom:1rem">
-      <div class="card-title" style="margin-bottom:1rem">Race & Driver</div>
-      <div class="form-row">
-        <div class="form-group">
+      <div class="ctitle">Race & Driver</div>
+      <div class="frow">
+        <div class="fg">
           <label>Race</label>
-          <select id="pit-race-sel"><option value="">Loading races...</option></select>
+          <select id="pit-race"><option value="">Loading races…</option></select>
         </div>
-        <div class="form-group">
+        <div class="fg">
           <label>Driver</label>
-          <select id="pit-driver-sel"><option value="">Loading drivers...</option></select>
+          <select id="pit-driver"><option value="">Loading drivers…</option></select>
         </div>
         <button class="btn" onclick="loadPit()">Calculate ◎</button>
       </div>
-      <p class="tip">Races and drivers loaded from live API. Strategy uses historical tyre degradation models.</p>
+      <p class="tip">Races and drivers loaded from the live API. The model uses historical tyre degradation patterns.</p>
     </div>
     <div id="pit-output"></div>
   </div>
 </div>
 
-<!-- AI ADVISOR -->
+<!-- ═══ AI ADVISOR ═══ -->
 <div id="panel-ai" class="panel">
   <div class="container">
     <div class="page-title">
       <h1>AI Strategy Advisor — 2026</h1>
-      <p>// llama 3.1 (groq) + historical elo + 2026 f1 regulation knowledge</p>
+      <p>// llama 3.1 (groq) + historical elo data + 2026 regulation knowledge</p>
     </div>
 
     <div class="card fade" style="margin-bottom:1rem">
-      <div class="card-title" style="margin-bottom:1rem">Why This Feature Exists</div>
-      <p style="font-size:0.82rem;color:var(--text2);line-height:1.7;margin-bottom:1rem">
-        No dataset exists for 2026 F1 because the season has not happened. Traditional data-driven methods cannot answer strategic questions about a future regulation set.
-        This endpoint bridges that gap by combining <strong>real historical constructor Elo ratings</strong> from this database with <strong>AI reasoning</strong> about the known 2026 regulation changes.
+      <div class="ctitle">Why This Feature Exists</div>
+      <p style="font-size:.82rem;color:var(--text2);line-height:1.75;margin-bottom:1rem">
+        No dataset exists for 2026 F1 because the season has not happened. Traditional data-driven approaches cannot answer strategic questions about a future regulation set.
+        This endpoint bridges that gap — it fetches <strong>real historical Elo ratings</strong> from this database and sends them alongside the known 2026 regulation changes to an LLM, which reasons over both to produce regulation-aware strategic insight.
       </p>
-      <div class="grid-3" style="gap:0.6rem">
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">50/50 Power Split</div>
-          <div style="font-size:0.72rem;color:var(--muted)">MGU-K delivers 350kW. MGU-H removed entirely from the power unit.</div>
+      <div class="g3" style="gap:.6rem">
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:.78rem">50/50 Power Split</div>
+          <div style="font-size:.71rem;color:var(--muted)">MGU-K delivers 350kW. MGU-H removed entirely.</div>
         </div>
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">Active Aerodynamics</div>
-          <div style="font-size:0.72rem;color:var(--muted)">Z-mode (straights) vs X-mode (corners). Software-controlled auto-switching.</div>
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:.78rem">Active Aerodynamics</div>
+          <div style="font-size:.71rem;color:var(--muted)">Z-mode straights, X-mode corners — software auto-switching.</div>
         </div>
-        <div style="padding:0.8rem;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
-          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:0.8rem">Smaller Cars</div>
-          <div style="font-size:0.72rem;color:var(--muted)">5400×1900mm. Higher electrical torque stresses new Pirelli compounds.</div>
+        <div style="padding:.8rem;background:var(--surface2);border-radius:7px;border:1px solid var(--border)">
+          <div style="font-weight:600;color:var(--red);margin-bottom:4px;font-size:.78rem">Smaller Cars</div>
+          <div style="font-size:.71rem;color:var(--muted)">5400×1900mm. Higher torque stresses new Pirelli compounds.</div>
         </div>
       </div>
     </div>
 
     <div class="card fade d1" style="margin-bottom:1rem">
-      <div class="card-title" style="margin-bottom:1rem">Generate Recommendation</div>
-      <div class="form-row">
-        <div class="form-group">
+      <div class="ctitle">Generate Recommendation</div>
+      <div class="frow">
+        <div class="fg">
           <label>Constructor</label>
           <select id="ai-con">
             <option>Mercedes</option><option>Red Bull</option><option>Ferrari</option>
@@ -488,7 +422,7 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
             <option>Williams</option><option>AlphaTauri</option><option>Haas</option><option>Alfa Romeo</option>
           </select>
         </div>
-        <div class="form-group">
+        <div class="fg">
           <label>Circuit</label>
           <select id="ai-cir">
             <option>Silverstone</option><option>Monaco</option><option>Monza</option>
@@ -498,8 +432,11 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
         </div>
         <button class="btn" onclick="loadAI()" id="ai-btn">⚡ Generate</button>
       </div>
-      <div class="notice danger">⚠ AI response may take 30–60s on free tier. First request wakes the Render server.</div>
+      <div class="notice danger" style="margin-top:.75rem">
+        ⚠ AI response may take 30–60s on free tier. The Render server sleeps after 15 minutes — first request wakes it up.
+      </div>
     </div>
+
     <div id="ai-output"></div>
   </div>
 </div>
@@ -507,13 +444,14 @@ hr { border:none; border-top:1px solid var(--border); margin:1.25rem 0; }
 <script>
 const API = 'https://comp3011-f1-api.onrender.com';
 
+// ── helpers ──────────────────────────────────────────────
 async function get(path) {
   const r = await fetch(API + path);
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
-const spin = (m='Loading...') => `<div class="loading"><div class="spin"></div>${m}</div>`;
-const errBox = m => `<div class="err">⚠ ${m}</div>`;
+const spin = (m='Loading…') => `<div class="loading"><div class="spin"></div>${m}</div>`;
+const errBox = m => `<div class="err-box">⚠ ${m}</div>`;
 
 function switchTab(name, el) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -522,264 +460,342 @@ function switchTab(name, el) {
   document.getElementById('panel-' + name).classList.add('active');
 }
 
-async function loadOverview() {
+// ── Overview static content ───────────────────────────────
+(function buildOverview() {
+  const features = [
+    ['Constructor ELO','Pairwise Elo across all results'],
+    ['Wet Weather','Normalised driver scoring'],
+    ['Head-to-Head','Direct rivalry analysis'],
+    ['Pit Window','Optimal stop calculator'],
+    ['Tyre Model','Degradation regression'],
+    ['AI Advisor 2026','LLaMA + 2026 regs','highlight'],
+  ];
+  document.getElementById('feature-grid').innerHTML = features.map(([name,desc,cls]) => `
+    <div class="feat${cls?' feat-hl':''}" style="${cls?'border-color:rgba(232,0,45,.3);background:var(--red-light)':''}">
+      <div class="feat-dot"></div>
+      <div>
+        <div class="feat-name" style="${cls?'color:var(--red)':''}">${name}</div>
+        <div class="feat-desc">${desc}</div>
+      </div>
+    </div>`).join('');
+
+  const stack = [
+    ['Framework','FastAPI + Python 3.11'],
+    ['Database','PostgreSQL (asyncpg)'],
+    ['ORM','SQLAlchemy async'],
+    ['Auth','JWT Bearer + Argon2'],
+    ['AI Provider','Groq / LLaMA 3.1'],
+    ['Deployment','Render'],
+    ['Testing','pytest · 120 tests · 79% cov'],
+    ['Architecture','Repository + MCP Compatible'],
+  ];
+  document.getElementById('stack-table').innerHTML = stack.map(([k,v]) => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.52rem 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.78rem;color:var(--text2)">${k}</span>
+      <span style="font-family:var(--mono);font-size:.69rem;color:var(--text);font-weight:500">${v}</span>
+    </div>`).join('');
+})();
+
+// ── API Status ────────────────────────────────────────────
+async function checkStatus() {
   try {
     await get('/');
     document.getElementById('stat-api').textContent = 'ONLINE';
     document.getElementById('stat-api').style.color = '#00b341';
   } catch {
     document.getElementById('stat-api').textContent = 'SLEEPING';
-    document.getElementById('stat-api').style.color = 'rgba(255,255,255,0.3)';
+    document.getElementById('stat-api').style.color = 'rgba(255,255,255,.3)';
   }
 }
 
+// ── Load dropdowns ────────────────────────────────────────
 async function loadDropdowns() {
-  // Wake server first
-  try { await get('/'); } catch(e) {}
+  // Try to wake server quietly
+  try { await get('/'); } catch {}
 
-  // Load drivers — try multiple response shapes
   try {
     const dd = await get('/api/v1/drivers/');
     const drivers = Array.isArray(dd) ? dd : (dd.drivers || dd.items || dd.data || []);
-    if (drivers.length) {
-      const dOpts = drivers
-        .map(d => {
-          const name = [d.forename, d.surname].filter(Boolean).join(' ') || d.name || d.full_name || 'Driver ' + d.id;
-          return `<option value="${d.id}">${name}</option>`;
-        })
-        .join('');
-      ['h2h-a-sel','h2h-b-sel','pit-driver-sel'].forEach(id => {
-        document.getElementById(id).innerHTML = '<option value="">Select driver...</option>' + dOpts;
-      });
-    } else {
-      throw new Error('Empty driver list');
-    }
+    if (!drivers.length) throw new Error('empty');
+    const opts = drivers.map(d => {
+      const name = [d.forename, d.surname].filter(Boolean).join(' ') || d.name || 'Driver ' + d.id;
+      return `<option value="${d.id}">${name}</option>`;
+    }).join('');
+    const placeholder = '<option value="">Select driver…</option>';
+    ['h2h-a','h2h-b','pit-driver'].forEach(id => {
+      document.getElementById(id).innerHTML = placeholder + opts;
+    });
   } catch(e) {
-    console.log('Driver dropdown failed:', e.message);
-    // Fallback: show manual ID input
-    ['h2h-a-sel','h2h-b-sel','pit-driver-sel'].forEach(id => {
-      const sel = document.getElementById(id);
-      sel.outerHTML = `<input type="number" id="${id}" placeholder="Enter driver ID" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;font-family:var(--inter);font-size:0.82rem;border-radius:6px;outline:none;width:100%">`;
+    ['h2h-a','h2h-b','pit-driver'].forEach(id => {
+      document.getElementById(id).innerHTML = '<option value="">Could not load — enter ID manually</option>';
     });
   }
 
-  // Load races — try multiple response shapes
   try {
     const rd = await get('/api/v1/races/');
     const races = Array.isArray(rd) ? rd : (rd.races || rd.items || rd.data || []);
-    if (races.length) {
-      const rOpts = races
-        .map(r => {
-          const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
-          return `<option value="${r.id}">${label}</option>`;
-        })
-        .join('');
-      document.getElementById('pit-race-sel').innerHTML = '<option value="">Select race...</option>' + rOpts;
-    } else {
-      throw new Error('Empty race list');
-    }
+    if (!races.length) throw new Error('empty');
+    const opts = races.map(r => {
+      const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
+      return `<option value="${r.id}">${label}</option>`;
+    }).join('');
+    document.getElementById('pit-race').innerHTML = '<option value="">Select race…</option>' + opts;
   } catch(e) {
-    console.log('Race dropdown failed:', e.message);
-    const sel = document.getElementById('pit-race-sel');
-    sel.outerHTML = `<input type="number" id="pit-race-sel" placeholder="Enter race ID" style="background:var(--surface2);border:1.5px solid var(--border);color:var(--text);padding:0.55rem 0.8rem;font-family:var(--inter);font-size:0.82rem;border-radius:6px;outline:none;width:100%">`;
+    document.getElementById('pit-race').innerHTML = '<option value="">Could not load — enter ID manually</option>';
   }
 }
 
+// ── ELO ──────────────────────────────────────────────────
 async function loadElo() {
   const el = document.getElementById('elo-output');
-  el.innerHTML = spin('Computing Elo ratings...');
+  el.innerHTML = spin('Computing Elo ratings…');
   try {
     const data = await get('/api/v1/strategy/constructor-elo');
     const all = data.ratings || [];
 
-    // Deduplicate: keep highest Elo per constructor name
+    // Deduplicate: keep highest Elo per normalised name
     const best = {};
     for (const r of all) {
       const key = r.constructor.toLowerCase().trim();
       if (!best[key] || r.elo > best[key].elo) best[key] = r;
     }
-    const unique = Object.values(best).sort((a,b) => b.elo - a.elo);
-
-    const maxElo = unique[0]?.elo || 2000;
-    const minElo = unique[unique.length-1]?.elo || 1500;
-    const rankCls = i => i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const unique = Object.values(best).sort((a, b) => b.elo - a.elo);
+    const maxE = unique[0]?.elo || 2000;
+    const minE = unique[unique.length-1]?.elo || 1400;
+    const rk = i => i===0?'g':i===1?'s':i===2?'b':'';
 
     el.innerHTML = `
       <table class="tbl">
-        <thead><tr><th style="width:44px">#</th><th>Constructor</th><th>ELO</th><th>Relative Strength</th><th>vs Baseline</th></tr></thead>
-        <tbody>
-          ${unique.map((r,i) => {
-            const pct = Math.max(2, ((r.elo - minElo) / (maxElo - minElo) * 100)).toFixed(1);
-            const diff = (r.elo - 1500).toFixed(0);
-            const sign = diff > 0 ? '+' : '';
-            return `<tr>
-              <td><div class="rank ${rankCls(i)}">${i+1}</div></td>
-              <td class="bold">${r.constructor}</td>
-              <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${r.elo.toFixed(1)}</td>
-              <td>
-                <div style="display:flex;align-items:center;gap:10px">
-                  <div class="elo-bar" style="flex:1"><div class="elo-fill" style="width:${pct}%"></div></div>
-                  <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);min-width:36px;text-align:right">${pct}%</span>
-                </div>
-              </td>
-              <td style="font-family:var(--mono);font-size:0.72rem;color:${diff>0?'var(--green)':'var(--red)'}">${sign}${diff}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
+        <thead><tr><th style="width:44px">#</th><th>Constructor</th><th>ELO</th><th>Relative Strength</th><th>vs Base</th></tr></thead>
+        <tbody>${unique.map((r,i) => {
+          const pct = Math.max(2, ((r.elo - minE) / (maxE - minE) * 100)).toFixed(1);
+          const diff = (r.elo - 1500).toFixed(0);
+          const sign = diff > 0 ? '+' : '';
+          return `<tr>
+            <td><div class="rank ${rk(i)}">${i+1}</div></td>
+            <td class="bold">${r.constructor}</td>
+            <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${r.elo.toFixed(1)}</td>
+            <td><div style="display:flex;align-items:center;gap:10px">
+              <div class="elo-bar"><div class="elo-fill" style="width:${pct}%"></div></div>
+              <span style="font-family:var(--mono);font-size:.62rem;color:var(--muted);min-width:34px;text-align:right">${pct}%</span>
+            </div></td>
+            <td style="font-family:var(--mono);font-size:.7rem;color:${diff>0?'var(--green)':'var(--red)'}">${sign}${diff}</td>
+          </tr>`;
+        }).join('')}</tbody>
       </table>
-      <p style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);margin-top:1rem;padding:0.8rem;background:var(--surface2);border-radius:6px">
-        ${data.methodology || 'Pairwise Elo — each race updates ratings based on expected vs actual finishing order.'}
+      <p style="font-family:var(--mono);font-size:.61rem;color:var(--muted);margin-top:1rem;padding:.75rem;background:var(--surface2);border-radius:6px">
+        ${data.methodology || 'Pairwise Elo — each race updates ratings based on expected vs actual finishing order across all constructors.'}
       </p>`;
   } catch(e) { el.innerHTML = errBox('Failed: ' + e.message); }
 }
 
+// ── WET WEATHER ──────────────────────────────────────────
 async function loadWet() {
   const el = document.getElementById('wet-output');
-  el.innerHTML = spin('Analysing wet conditions...');
+  el.innerHTML = spin('Analysing wet conditions…');
   try {
     const data = await get('/api/v1/strategy/wet-weather-scores');
     const scores = data.scores || [];
-    if (!scores.length) { el.innerHTML = '<div class="empty">No wet race data available</div>'; return; }
+    if (!scores.length) { el.innerHTML = '<div class="empty">No wet race data available in current dataset</div>'; return; }
 
-    const chipCls = r => ({'Elite':'elite','Strong':'strong','Average':'average','Weak':'weak'}[r]||'weak');
-    const interp = g => g > 3 ? 'Significant rain advantage' : g > 1 ? 'Gains positions in rain' : g > 0 ? 'Slight advantage' : g === 0 ? 'Neutral' : 'Loses positions in rain';
+    const chipCls = r => ({'Elite':'c-elite','Strong':'c-strong','Average':'c-average','Weak':'c-weak'}[r]||'c-weak');
+    const interp = g => g > 3 ? 'Significant rain advantage' : g > 1 ? 'Gains positions in rain' : g > 0 ? 'Slight advantage in rain' : g === 0 ? 'Neutral wet performance' : 'Loses positions in rain';
 
     el.innerHTML = `
       <table class="tbl">
         <thead><tr><th>#</th><th>Driver</th><th>Rating</th><th>Avg Pos Gain</th><th>Norm Score</th><th>Wet Races</th><th>Interpretation</th></tr></thead>
-        <tbody>
-          ${scores.map((s,i) => {
-            const g = parseFloat(s.avg_position_gain)||0;
-            const n = parseFloat(s.normalised_wet_score)||0;
-            return `<tr>
-              <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
-              <td class="bold">${s.driver}</td>
-              <td><span class="chip chip-${chipCls(s.wet_weather_rating)}">${s.wet_weather_rating}</span></td>
-              <td style="font-family:var(--mono);color:${g>=0?'var(--green)':'var(--red)'};font-weight:500">${g>=0?'+':''}${g.toFixed(2)}</td>
-              <td style="font-family:var(--mono);color:${n>0?'#059669':'#dc2626'}">${n.toFixed(3)}</td>
-              <td style="font-family:var(--mono);color:var(--muted)">${s.wet_races_analysed}</td>
-              <td style="font-size:0.72rem;color:var(--text2)">${interp(g)}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
+        <tbody>${scores.map((s,i) => {
+          const g = parseFloat(s.avg_position_gain)||0;
+          const n = parseFloat(s.normalised_wet_score)||0;
+          return `<tr>
+            <td style="font-family:var(--mono);color:var(--muted)">${i+1}</td>
+            <td class="bold">${s.driver}</td>
+            <td><span class="chip ${chipCls(s.wet_weather_rating)}">${s.wet_weather_rating}</span></td>
+            <td style="font-family:var(--mono);color:${g>=0?'var(--green)':'var(--red)'};font-weight:500">${g>=0?'+':''}${g.toFixed(2)}</td>
+            <td style="font-family:var(--mono);color:${n>0?'#059669':'#dc2626'}">${n.toFixed(3)}</td>
+            <td style="font-family:var(--mono);color:var(--muted)">${s.wet_races_analysed}</td>
+            <td style="font-size:.71rem;color:var(--text2)">${interp(g)}</td>
+          </tr>`;
+        }).join('')}</tbody>
       </table>
       <div class="notice warn" style="margin-top:1rem">
-        ⚠ Drivers with 2–4 wet races may show extreme normalised scores due to small sample sizes. Interpret Elite ratings with few races cautiously.
+        ⚠ Drivers with 2–4 wet races may show extreme scores due to small sample sizes. An "Elite" rating from 2 races is less reliable than one from 8+ races.
       </div>`;
   } catch(e) { el.innerHTML = errBox('Failed: ' + e.message); }
 }
 
+// ── HEAD TO HEAD ─────────────────────────────────────────
 async function loadH2H() {
-  const a = document.getElementById('h2h-a-sel').value;
-  const b = document.getElementById('h2h-b-sel').value;
+  const a = document.getElementById('h2h-a').value;
+  const b = document.getElementById('h2h-b').value;
   const season = document.getElementById('h2h-season').value;
   const el = document.getElementById('h2h-output');
   if (!a || !b) { el.innerHTML = errBox('Select both drivers'); return; }
   if (a === b) { el.innerHTML = errBox('Select two different drivers'); return; }
-  el.innerHTML = `<div class="card">${spin('Analysing head-to-head record...')}</div>`;
+  el.innerHTML = `<div class="card">${spin('Analysing head-to-head record…')}</div>`;
   try {
-    let url = `/api/v1/analytics/head-to-head/${a}/${b}`;
-    if (season) url += `?season=${season}`;
-    const d = await get(url);
+    const d = await get(`/api/v1/analytics/head-to-head/${a}/${b}${season?'?season='+season:''}`);
     const h = d.head_to_head;
-    const pctA = parseFloat(h.driver_a_win_rate)||0;
-    const pctB = parseFloat(h.driver_b_win_rate)||0;
-    const nameA = d.driver_a?.name || 'Driver A';
-    const nameB = d.driver_b?.name || 'Driver B';
-    const shortA = nameA.split(' ').slice(-1)[0];
-    const shortB = nameB.split(' ').slice(-1)[0];
+    const pA = parseFloat(h.driver_a_win_rate)||0;
+    const pB = parseFloat(h.driver_b_win_rate)||0;
+    const nA = d.driver_a?.name || 'Driver A';
+    const nB = d.driver_b?.name || 'Driver B';
+    const sA = nA.split(' ').slice(-1)[0];
+    const sB = nB.split(' ').slice(-1)[0];
 
     el.innerHTML = `
-      <div class="grid-2" style="margin-bottom:1rem">
-        <div class="winner-banner fade">
-          <div class="winner-label">Overall Winner</div>
-          <div class="winner-name">${(h.overall_winner||'').split(' ').slice(-1)[0].toUpperCase()}</div>
-          <div style="font-family:var(--mono);font-size:0.6rem;color:rgba(255,255,255,0.3);margin-top:4px">${d.shared_races_analysed} races analysed</div>
-          <div class="h2h-bar-track">
-            <div class="h2h-seg-a" style="width:${pctA}%"></div>
-            <div class="h2h-seg-b" style="width:${pctB}%"></div>
+      <div class="g2" style="margin-bottom:1rem">
+        <div class="versus-banner fade">
+          <div class="versus-title">Overall Winner</div>
+          <div class="versus-winner">${(h.overall_winner||'').split(' ').slice(-1)[0].toUpperCase()}</div>
+          <div style="font-family:var(--mono);font-size:.58rem;color:rgba(255,255,255,.28);margin-top:4px">${d.shared_races_analysed} shared races analysed</div>
+          <div class="h2h-track">
+            <div class="h2h-a" style="width:${pA}%"></div>
+            <div class="h2h-b" style="width:${pB}%"></div>
           </div>
           <div class="h2h-labels">
-            <span style="color:var(--red);font-family:var(--mono);font-size:0.65rem;font-weight:600">${shortA} ${pctA}%</span>
-            <span style="color:#3b82f6;font-family:var(--mono);font-size:0.65rem;font-weight:600">${shortB} ${pctB}%</span>
+            <span style="color:var(--red);font-family:var(--mono);font-size:.63rem;font-weight:600">${sA} — ${pA}%</span>
+            <span style="color:#3b82f6;font-family:var(--mono);font-size:.63rem;font-weight:600">${sB} — ${pB}%</span>
           </div>
         </div>
         <div class="card fade d1">
-          <div class="card-title" style="margin-bottom:1rem">Statistics</div>
-          <div class="grid-2" style="gap:0.6rem">
-            <div class="stat-card"><div class="stat-num red">${h.driver_a_wins}</div><div class="stat-lbl">${shortA} Wins</div></div>
-            <div class="stat-card"><div class="stat-num" style="color:#3b82f6">${h.driver_b_wins}</div><div class="stat-lbl">${shortB} Wins</div></div>
-            <div class="stat-card"><div class="stat-num">${h.driver_a_total_points}</div><div class="stat-lbl">${shortA} Pts</div></div>
-            <div class="stat-card"><div class="stat-num">${h.driver_b_total_points}</div><div class="stat-lbl">${shortB} Pts</div></div>
+          <div class="ctitle">Statistics</div>
+          <div class="g2" style="gap:.6rem">
+            <div class="scard"><div class="snum r">${h.driver_a_wins}</div><div class="slbl">${sA} Wins</div></div>
+            <div class="scard"><div class="snum b">${h.driver_b_wins}</div><div class="slbl">${sB} Wins</div></div>
+            <div class="scard"><div class="snum">${h.driver_a_total_points}</div><div class="slbl">${sA} Pts</div></div>
+            <div class="scard"><div class="snum">${h.driver_b_total_points}</div><div class="slbl">${sB} Pts</div></div>
           </div>
           <hr>
-          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.7rem;color:var(--muted)">
+          <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:.69rem;color:var(--muted)">
             <span>Dominance Score</span>
             <span style="color:var(--text);font-weight:600">${parseFloat(d.dominance_score||0).toFixed(1)}</span>
           </div>
         </div>
       </div>
       <div class="card fade d2">
-        <div class="card-title" style="margin-bottom:1rem">Season Breakdown</div>
+        <div class="ctitle">Season Breakdown</div>
         <table class="tbl">
-          <thead><tr><th>Season</th><th>Races</th><th>${nameA}</th><th>${nameB}</th><th>Winner</th></tr></thead>
-          <tbody>
-            ${(d.season_breakdown||[]).map(s => `<tr>
-              <td><span class="season-tag">${s.season}</span></td>
-              <td style="font-family:var(--mono)">${s.races_together}</td>
-              <td style="font-family:var(--mono);color:var(--red);font-weight:600">${s.driver_a_wins}</td>
-              <td style="font-family:var(--mono);color:#3b82f6;font-weight:600">${s.driver_b_wins}</td>
-              <td style="font-size:0.78rem;font-weight:500">${s.season_winner||'—'}</td>
-            </tr>`).join('')}
-          </tbody>
+          <thead><tr><th>Season</th><th>Shared Races</th><th>${nA}</th><th>${nB}</th><th>Season Winner</th></tr></thead>
+          <tbody>${(d.season_breakdown||[]).map(s => `<tr>
+            <td><span class="season-tag">${s.season}</span></td>
+            <td style="font-family:var(--mono)">${s.races_together}</td>
+            <td style="font-family:var(--mono);color:var(--red);font-weight:600">${s.driver_a_wins}</td>
+            <td style="font-family:var(--mono);color:#3b82f6;font-weight:600">${s.driver_b_wins}</td>
+            <td style="font-size:.78rem;font-weight:500">${s.season_winner||'—'}</td>
+          </tr>`).join('')}</tbody>
         </table>
       </div>`;
   } catch(e) { el.innerHTML = errBox('Analysis failed — ' + e.message); }
 }
 
+// ── PIT WINDOW ───────────────────────────────────────────
 async function loadPit() {
-  const race = document.getElementById('pit-race-sel').value;
-  const driver = document.getElementById('pit-driver-sel').value;
+  const race = document.getElementById('pit-race').value;
+  const driver = document.getElementById('pit-driver').value;
   const el = document.getElementById('pit-output');
-  if (!race || !driver) { el.innerHTML = errBox('Select a race and driver'); return; }
-  el.innerHTML = `<div class="card">${spin('Calculating pit window...')}</div>`;
+  if (!race || !driver) { el.innerHTML = errBox('Select a race and a driver'); return; }
+  el.innerHTML = `<div class="card">${spin('Calculating pit window…')}</div>`;
   try {
     const d = await get(`/api/v1/strategy/pit-window/${race}/${driver}`);
-    const optLaps = (d.recommended_pit_laps||[]).join(', ') || '—';
-    const undLaps = (d.undercut_window_laps||[]).join(', ') || '—';
-    const avgPit = d.avg_pit_stop_duration_seconds ? d.avg_pit_stop_duration_seconds.toFixed(3) + 's' : '—';
-    const stints = d.stint_analysis || [];
+
+    // Handle arrays or single values
+    const fmtLaps = v => Array.isArray(v) ? (v.length ? v.join(', ') : '—') : (v ?? '—');
+    const optLaps = fmtLaps(d.recommended_pit_laps);
+    const undLaps = fmtLaps(d.undercut_window_laps);
+    const avgPit  = d.avg_pit_stop_duration_seconds != null ? (+d.avg_pit_stop_duration_seconds).toFixed(3) + 's' : '—';
+    const stints  = d.stint_analysis || [];
 
     el.innerHTML = `
-      <div class="grid-3" style="margin-bottom:1rem">
-        <div class="stat-card fade"><div class="stat-num red">${optLaps}</div><div class="stat-lbl">Optimal Pit Laps</div></div>
-        <div class="stat-card fade d1"><div class="stat-num">${undLaps}</div><div class="stat-lbl">Undercut Window</div></div>
-        <div class="stat-card fade d2"><div class="stat-num" style="font-size:1.4rem">${avgPit}</div><div class="stat-lbl">Avg Pit Duration</div></div>
+      <div class="g3" style="margin-bottom:1rem">
+        <div class="scard fade"><div class="snum r" style="font-size:1.5rem">${optLaps}</div><div class="slbl">Optimal Pit Laps</div></div>
+        <div class="scard fade d1"><div class="snum" style="font-size:1.5rem">${undLaps}</div><div class="slbl">Undercut Window</div></div>
+        <div class="scard fade d2"><div class="snum" style="font-size:1.3rem">${avgPit}</div><div class="slbl">Avg Pit Duration</div></div>
       </div>
+
       ${stints.length ? `
       <div class="card fade d1" style="margin-bottom:1rem">
-        <div class="card-title" style="margin-bottom:1rem">Stint Analysis</div>
+        <div class="ctitle">Stint Analysis</div>
         <table class="tbl">
-          <thead><tr><th>#</th><th>Compound</th><th>Lap Range</th><th>Optimal Pit</th><th>Undercut Lap</th><th>Length</th></tr></thead>
-          <tbody>
-            ${stints.map((s,i) => `<tr>
-              <td style="font-family:var(--mono)">${i+1}</td>
-              <td><span style="font-family:var(--mono);font-size:0.7rem;padding:3px 8px;background:var(--surface2);border-radius:4px;border:1px solid var(--border)">${s.compound||'—'}</span></td>
-              <td style="font-family:var(--mono)">${s.lap_start??'?'}–${s.lap_end??'?'}</td>
-              <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${s.optimal_pit_lap||'—'}</td>
-              <td style="font-family:var(--mono);color:var(--muted)">${s.undercut_lap||'—'}</td>
-              <td style="font-family:var(--mono)">${s.lap_end!=null&&s.lap_start!=null ? s.lap_end-s.lap_start : '—'} laps</td>
-            </tr>`).join('')}
-          </tbody>
+          <thead><tr><th>#</th><th>Compound</th><th>Lap Range</th><th>Optimal Pit</th><th>Undercut Lap</th><th>Stint Length</th></tr></thead>
+          <tbody>${stints.map((s,i) => `<tr>
+            <td style="font-family:var(--mono)">${i+1}</td>
+            <td><span style="font-family:var(--mono);font-size:.7rem;padding:3px 8px;background:var(--surface2);border-radius:4px;border:1px solid var(--border)">${s.compound||'—'}</span></td>
+            <td style="font-family:var(--mono)">${s.lap_start??'?'}–${s.lap_end??'?'}</td>
+            <td style="font-family:var(--mono);font-weight:600;color:var(--dark)">${s.optimal_pit_lap??'—'}</td>
+            <td style="font-family:var(--mono);color:var(--muted)">${s.undercut_lap??'—'}</td>
+            <td style="font-family:var(--mono)">${s.lap_end!=null&&s.lap_start!=null ? s.lap_end-s.lap_start : '—'} laps</td>
+          </tr>`).join('')}</tbody>
         </table>
-      </div>` : ''}
+      </div>` : `<div class="notice warn" style="margin-bottom:1rem">No stint data found for this driver/race combination.</div>`}
+
       <div class="card fade d2">
-        <div class="card-title" style="margin-bottom:1rem">Strategy Summary</div>
-        <p style="font-size:0.83rem;line-height:1.7;color:var(--text2);margin-bottom:${d.limitations?.length?'1rem':'0'}">${d.strategy_summary||'No summary available.'}</p>
-        ${d.limitations?.length ? `<hr><div class="card-title" style="margin-bottom:0.8rem">Model Limitations</div>
-        ${d.limitations.map(l=>`<div style="font-family:var(--mono);font-size:0.67rem;color:var(--muted);margin-bottom:5px;display:flex;gap:8px"><span style="color:var(--red)">▸</span>${l}</div>`).join('')}` : ''}
+        <div class="ctitle">Strategy Summary</div>
+        <p style="font-size:.82rem;line-height:1.75;color:var(--text2);margin-bottom:${d.limitations?.length?'1rem':'0'}">${d.strategy_summary||'No summary available.'}</p>
+        ${d.limitations?.length ? `<hr><div class="ctitle">Model Limitations</div>
+          ${d.limitations.map(l=>`<div style="font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-bottom:5px;display:flex;gap:8px"><span style="color:var(--red)">▸</span>${l}</div>`).join('')}` : ''}
       </div>`;
   } catch(e) { el.innerHTML = errBox('Calculation failed — ' + e.message); }
+}
+
+// ── AI ADVISOR ───────────────────────────────────────────
+function parseAIResponse(text) {
+  // Split into named sections
+  const sectionMap = {
+    'REGULATION IMPACT': { key:'impact', label:'Regulation Impact Assessment' },
+    'CIRCUIT STRATEGY':  { key:'circuit', label:'Circuit Strategy' },
+    'KEY RISKS':         { key:'risks', label:'Key Risks' },
+    'CONFIDENCE':        { key:'confidence', label:'Confidence Level' },
+  };
+
+  const sections = {};
+  let remaining = text;
+
+  for (const [marker, info] of Object.entries(sectionMap)) {
+    const regex = new RegExp(`\\*{0,2}${marker}[^\\n]*\\*{0,2}[:\\s]*`, 'i');
+    const idx = remaining.search(regex);
+    if (idx !== -1) {
+      const match = remaining.match(regex);
+      const start = idx + match[0].length;
+      // Find next section
+      let end = remaining.length;
+      for (const [otherMarker] of Object.entries(sectionMap)) {
+        if (otherMarker === marker) continue;
+        const otherIdx = remaining.indexOf(otherMarker, start);
+        if (otherIdx !== -1 && otherIdx < end) end = otherIdx;
+      }
+      sections[info.key] = { label: info.label, text: remaining.slice(start, end).trim() };
+    }
+  }
+
+  // If we couldn't parse sections, return raw
+  if (Object.keys(sections).length < 2) return null;
+  return sections;
+}
+
+function renderAISection(label, text) {
+  // Clean markdown bold
+  const clean = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  // Split into bullet points if dashes/bullets present
+  const lines = clean.split('\n').map(l => l.trim()).filter(Boolean);
+  const bullets = lines.filter(l => l.startsWith('-') || l.startsWith('•') || /^\d+\./.test(l));
+  const prose = lines.filter(l => !l.startsWith('-') && !l.startsWith('•') && !/^\d+\./.test(l));
+
+  return `
+    <div class="ai-section">
+      <div class="ai-section-title">${label}</div>
+      <div class="ai-section-body">
+        ${prose.map(p => `<p>${p}</p>`).join('')}
+        ${bullets.map(b => `<div class="ai-bullet">${b.replace(/^[-•\d.]+\s*/,'')}</div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function confidenceLevel(text) {
+  const t = (text||'').toLowerCase();
+  if (t.includes('high')) return { cls:'conf-high', label:'HIGH CONFIDENCE' };
+  if (t.includes('medium') || t.includes('moderate')) return { cls:'conf-medium', label:'MEDIUM CONFIDENCE' };
+  return { cls:'conf-low', label:'LOW CONFIDENCE' };
 }
 
 async function loadAI() {
@@ -788,41 +804,69 @@ async function loadAI() {
   const el = document.getElementById('ai-output');
   const btn = document.getElementById('ai-btn');
   btn.disabled = true;
-  btn.innerHTML = '<div class="spin" style="width:12px;height:12px;border-width:1.5px"></div> Generating...';
-  el.innerHTML = `<div class="card">${spin('AI reasoning over 2026 regs + historical Elo data... (30–60s on free tier)')}</div>`;
+  btn.innerHTML = '<div class="spin" style="width:12px;height:12px;border-width:1.5px"></div> Generating…';
+  el.innerHTML = `<div class="card">${spin('AI reasoning over 2026 regs + historical Elo… (30–60s on free tier)')}</div>`;
   try {
     const d = await get(`/api/v1/analytics/ai-strategy/${encodeURIComponent(con)}/${encodeURIComponent(cir)}`);
+    const raw = d.ai_strategic_recommendation || '';
+    const parsed = parseAIResponse(raw);
+    const conf = parsed?.confidence ? confidenceLevel(parsed.confidence.text) : null;
+
     el.innerHTML = `
-      <div class="grid-2" style="margin-bottom:1rem">
+      <div class="g2" style="margin-bottom:1rem">
         <div class="card fade">
-          <div class="card-title" style="margin-bottom:1rem">Constructor Profile</div>
+          <div class="ctitle">Constructor Profile</div>
           ${[
             ['Constructor', d.constructor],
             ['Circuit', d.circuit],
             ['Season', String(d.season)],
             ['Elo Rating', d.historical_data?.elo_rating?.toFixed(1)||'—'],
-            ['Elo Rank', `#${d.historical_data?.elo_rank||'—'} of ${d.historical_data?.total_constructors_ranked||'—'}`],
+            ['Elo Rank', '#'+(d.historical_data?.elo_rank||'—')+' of '+(d.historical_data?.total_constructors_ranked||'—')],
             ['Data Coverage', d.historical_data?.data_coverage||'2023–2024'],
-          ].map(([k,v],i)=>`
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid var(--border)">
-              <span style="font-size:0.78rem;color:var(--text2)">${k}</span>
-              <span style="font-family:var(--mono);font-size:0.72rem;color:${i===2||i===4?'var(--red)':'var(--dark)'};font-weight:600">${v}</span>
+          ].map(([k,v],i) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:.78rem;color:var(--text2)">${k}</span>
+              <span style="font-family:var(--mono);font-size:.7rem;color:${i===2||i===4?'var(--red)':'var(--dark)'};font-weight:600">${v}</span>
             </div>`).join('')}
-          <div style="margin-top:0.8rem;font-family:var(--mono);font-size:0.58rem;color:var(--muted)">Powered by ${d.model_used||'AI'}</div>
+          <div style="margin-top:.75rem;font-family:var(--mono);font-size:.57rem;color:var(--muted)">Powered by ${d.model_used||'AI'}</div>
         </div>
         <div class="card fade d1">
-          <div class="card-title" style="margin-bottom:1rem">2026 Regs Considered</div>
+          <div class="ctitle">2026 Regs Considered</div>
           ${(d.regulation_changes_considered||[]).map(r=>`
-            <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:0.6rem">
-              <span style="color:var(--red);margin-top:1px">▸</span>
-              <span style="font-size:0.78rem;color:var(--text2)">${r}</span>
+            <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:.6rem">
+              <span style="color:var(--red);margin-top:1px;flex-shrink:0">▸</span>
+              <span style="font-size:.78rem;color:var(--text2)">${r}</span>
             </div>`).join('')}
         </div>
       </div>
+
       <div class="card fade d2">
-        <div class="ai-tag"><div class="ai-dot"></div>AI RECOMMENDATION · ${con.toUpperCase()} · ${cir.toUpperCase()} · 2026</div>
-        <div class="ai-box">${d.ai_strategic_recommendation}</div>
-        <div class="notice warn" style="margin-top:1rem">${d.disclaimer}</div>
+        <div class="ai-header-bar">
+          <div class="ai-badge"><div class="ai-badge-dot"></div>AI RECOMMENDATION · 2026</div>
+          <div class="ai-context">
+            <div class="ai-ctx-item"><strong>${con}</strong></div>
+            <span style="color:var(--muted);font-size:.7rem">at</span>
+            <div class="ai-ctx-item"><strong>${cir}</strong></div>
+            ${conf ? `<div class="ai-confidence ${conf.cls}">${conf.label}</div>` : ''}
+          </div>
+        </div>
+
+        ${parsed ? `
+          ${parsed.impact   ? renderAISection(parsed.impact.label,   parsed.impact.text)   : ''}
+          ${parsed.circuit  ? renderAISection(parsed.circuit.label,  parsed.circuit.text)  : ''}
+          ${parsed.risks    ? renderAISection(parsed.risks.label,     parsed.risks.text)    : ''}
+          ${parsed.confidence ? `
+            <div class="ai-section">
+              <div class="ai-section-title">Confidence Level</div>
+              <div class="ai-section-body">
+                ${conf ? `<div class="ai-confidence ${conf.cls}" style="margin-bottom:.6rem">${conf.label}</div>` : ''}
+                <p>${parsed.confidence.text.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>')}</p>
+              </div>
+            </div>` : ''}
+        ` : `<div class="ai-raw">${raw}</div>`}
+
+        <hr>
+        <div class="notice warn" style="margin-top:0">${d.disclaimer}</div>
       </div>`;
   } catch(e) {
     el.innerHTML = errBox('AI generation failed — ' + e.message + '. Server may be sleeping, try again in 30s.');
@@ -832,7 +876,8 @@ async function loadAI() {
   }
 }
 
-loadOverview();
+// ── INIT ─────────────────────────────────────────────────
+checkStatus();
 loadDropdowns();
 loadElo();
 loadWet();
