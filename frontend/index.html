@@ -546,13 +546,15 @@ async function loadDropdowns() {
   }
 
   try {
-    const rd = await get('/api/v1/races/');
+    const rd = await get('/api/v1/races/?limit=500');
     const races = Array.isArray(rd) ? rd : (rd.races || rd.items || rd.data || []);
     if (!races.length) throw new Error('empty');
-    const opts = races.map(r => {
-      const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
-      return `<option value="${r.id}">${label}</option>`;
-    }).join('');
+    const opts = races
+      .filter(r => r.season >= 2023)
+      .map(r => {
+        const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
+        return `<option value="${r.id}">${label}</option>`;
+      }).join('');
     document.getElementById('pit-race').innerHTML = '<option value="">Select race…</option>' + opts;
   } catch(e) {
     document.getElementById('pit-race').innerHTML = '<option value="">Could not load — enter ID manually</option>';
@@ -721,6 +723,7 @@ async function loadPit() {
     const undLaps = fmtLaps(d.undercut_window_laps);
     const avgPit  = d.avg_pit_stop_duration_seconds != null ? (+d.avg_pit_stop_duration_seconds).toFixed(3) + 's' : '—';
     const stints  = d.stint_analysis || [];
+    const actualStops = d.actual_pit_stops || [];
 
     el.innerHTML = `
       <div class="g3" style="margin-bottom:1rem">
