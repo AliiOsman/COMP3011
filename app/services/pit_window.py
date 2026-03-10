@@ -24,12 +24,22 @@ async def calculate_pit_window(
     )
     stops = stops_result.scalars().all()
 
-    # Get driver's tyre stints
+    # Get driver's number from results (OpenF1 uses driver_number not driver_id)
+    driver_num_result = await db.execute(
+        select(Result.driver_number)
+        .where(Result.race_id == race_id)
+        .where(Result.driver_id == driver_id)
+    )
+    driver_number = driver_num_result.scalar()
+
+    # Get driver's tyre stints by driver_number
     stints_result = await db.execute(
         select(TyreStint)
         .where(TyreStint.race_id == race_id)
-        .where(TyreStint.driver_id == driver_id)
+        .where(TyreStint.driver_number == driver_number)
         .order_by(TyreStint.stint_number)
+    ) if driver_number else await db.execute(
+        select(TyreStint).where(TyreStint.race_id == race_id + 999999)  # empty
     )
     stints = stints_result.scalars().all()
 

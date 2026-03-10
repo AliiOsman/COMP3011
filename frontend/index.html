@@ -375,8 +375,7 @@ hr{border:none;border-top:1px solid var(--border);margin:1.1rem 0}
         </div>
         <button class="btn" onclick="loadPit()">Calculate ◎</button>
       </div>
-      <p class="tip">Races and drivers loaded from the live API. The model uses historical tyre degradation patterns.</p>
-    </div>
+      <p class="tip">Showing 2023–2024 races with tyre stint data available. Select a race and driver then click Calculate.</p>    </div>
     <div id="pit-output"></div>
   </div>
 </div>
@@ -549,8 +548,13 @@ async function loadDropdowns() {
     const rd = await get('/api/v1/races/?limit=500');
     const races = Array.isArray(rd) ? rd : (rd.races || rd.items || rd.data || []);
     if (!races.length) throw new Error('empty');
+    // Only races confirmed to have tyre stint data seeded
+    const racesWithStints = new Set([
+      104,105,106,107,109,110,111,112,114,115,116,117,
+      118,119,120,122,123,124,126,127,129,130,132
+    ]);
     const opts = races
-      .filter(r => r.season >= 2023)
+      .filter(r => racesWithStints.has(r.id))
       .map(r => {
         const label = [r.season, r.name || r.race_name || ('Race ' + r.id)].filter(Boolean).join(' — ');
         return `<option value="${r.id}">${label}</option>`;
