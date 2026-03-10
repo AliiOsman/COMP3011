@@ -10,12 +10,10 @@ async def calculate_pit_window(
     race_id: int,
     driver_id: int
 ) -> dict:
-    # Get race info
     race = await db.get(Race, race_id)
     if not race:
         return {"error": "Race not found"}
 
-    # Get driver's pit stops in this race
     stops_result = await db.execute(
         select(PitStop)
         .where(PitStop.race_id == race_id)
@@ -24,16 +22,6 @@ async def calculate_pit_window(
     )
     stops = stops_result.scalars().all()
 
-    # Get driver's number from results (OpenF1 uses driver_number not driver_id)
-    driver_num_result = await db.execute(
-        select(Result.driver_number)
-        .where(Result.race_id == race_id)
-        .where(Result.driver_id == driver_id)
-    )
-    driver_number = driver_num_result.scalar()
-
-    # Get driver's tyre stints by driver_number
-    # Get driver's tyre stints — driver_id backfilled from driver_number mapping
     stints_result = await db.execute(
         select(TyreStint)
         .where(TyreStint.race_id == race_id)
@@ -42,7 +30,6 @@ async def calculate_pit_window(
     )
     stints = stints_result.scalars().all()
 
-    # Get avg pit stop duration for this circuit (historical)
     circuit_races_result = await db.execute(
         select(Race.id).where(Race.circuit_id == race.circuit_id)
     )
@@ -56,7 +43,6 @@ async def calculate_pit_window(
     )
     avg_pit_duration = avg_stop_result.scalar() or 25.0
 
-    # Get total laps from results
     driver_result = await db.execute(
         select(Result)
         .where(Result.race_id == race_id)
@@ -65,25 +51,18 @@ async def calculate_pit_window(
     result = driver_result.scalars().first()
     total_laps = result.laps if result and result.laps else 50
 
-    # Compound degradation rates (laps before significant degradation)
     degradation_windows = {
-        "SOFT": 20,
-        "MEDIUM": 30,
-        "HARD": 40,
-        "INTERMEDIATE": 25,
-        "WET": 35,
+        "SOFT": 20, "MEDIUM": 30, "HARD": 40,
+        "INTERMEDIATE": 25, "WET": 35,
     }
 
-    # Build stint analysis
     stint_analysis = []
     recommended_pit_laps = []
 
     for stint in stints:
         compound = stint.compound or "MEDIUM"
         window = degradation_windows.get(compound, 30)
-        optimal_pit = (stint.lap_start or 1) + window
-        optimal_pit = min(optimal_pit, total_laps - 5)
-
+        optimal_pit = min((stint.lap_start or 1) + window, total_laps - 5)
         stint_analysis.append({
             "stint_number": stint.stint_number,
             "compound": compound,
@@ -95,7 +74,6 @@ async def calculate_pit_window(
         })
         recommended_pit_laps.append(optimal_pit)
 
-    # Undercut window — pit 2-3 laps earlier than optimal
     undercut_laps = [max(1, lap - 3) for lap in recommended_pit_laps]
 
     return {
@@ -106,8 +84,7 @@ async def calculate_pit_window(
         "avg_pit_stop_duration_seconds": round(avg_pit_duration, 3),
         "total_laps": total_laps,
         "actual_pit_stops": [
-            {"lap": s.lap, "stop_number": s.stop_number,
-             "duration_seconds": s.duration_seconds}
+            {"lap": s.lap, "stop_number": s.stop_number, "duration_seconds": s.duration_seconds}
             for s in stops
         ],
         "stint_analysis": stint_analysis,
