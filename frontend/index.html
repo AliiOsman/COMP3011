@@ -470,14 +470,28 @@ function switchTab(name, el) {
     ['Tyre Model','Degradation regression'],
     ['AI Advisor 2026','LLaMA + 2026 regs','highlight'],
   ];
-  document.getElementById('feature-grid').innerHTML = features.map(([name,desc,cls]) => `
-    <div class="feat${cls?' feat-hl':''}" style="${cls?'border-color:rgba(232,0,45,.3);background:var(--red-light)':''}">
-      <div class="feat-dot"></div>
-      <div>
-        <div class="feat-name" style="${cls?'color:var(--red)':''}">${name}</div>
-        <div class="feat-desc">${desc}</div>
-      </div>
-    </div>`).join('');
+const tabMap = {
+    'Constructor ELO': 'elo',
+    'Wet Weather': 'wet',
+    'Head-to-Head': 'h2h',
+    'Pit Window': 'pit',
+    'Tyre Model': null,
+    'AI Advisor 2026': 'ai',
+  };
+  document.getElementById('feature-grid').innerHTML = features.map(([name,desc,cls]) => {
+    const tab = tabMap[name];
+    const clickable = tab
+      ? `onclick="document.querySelector('.tab[onclick*=\\'${tab}\\']').click()" style="cursor:pointer;${cls?'border-color:rgba(232,0,45,.3);background:var(--red-light)':''};"`
+      : `style="${cls?'border-color:rgba(232,0,45,.3);background:var(--red-light)':''};"`;
+    return `
+      <div class="feat" ${clickable}>
+        <div class="feat-dot"></div>
+        <div>
+          <div class="feat-name" style="${cls?'color:var(--red)':''}">${name}</div>
+          <div class="feat-desc">${desc}</div>
+        </div>
+      </div>`;
+  }).join('');
 
   const stack = [
     ['Framework','FastAPI + Python 3.11'],
@@ -486,7 +500,7 @@ function switchTab(name, el) {
     ['Auth','JWT Bearer + Argon2'],
     ['AI Provider','Groq / LLaMA 3.1'],
     ['Deployment','Render'],
-    ['Testing','pytest · 120 tests · 79% cov'],
+    ['Testing','pytest · 120 tests · 80% cov'],
     ['Architecture','Repository + MCP Compatible'],
   ];
   document.getElementById('stack-table').innerHTML = stack.map(([k,v]) => `
@@ -699,6 +713,8 @@ async function loadPit() {
   try {
     const d = await get(`/api/v1/strategy/pit-window/${race}/${driver}`);
 
+    console.log('Full pit response:', JSON.stringify(d));
+
     // Handle arrays or single values
     const fmtLaps = v => Array.isArray(v) ? (v.length ? v.join(', ') : '—') : (v ?? '—');
     const optLaps = fmtLaps(d.recommended_pit_laps);
@@ -876,7 +892,6 @@ async function loadAI() {
   }
 }
 
-// ── INIT ─────────────────────────────────────────────────
 checkStatus();
 loadDropdowns();
 loadElo();
