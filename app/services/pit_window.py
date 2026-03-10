@@ -33,13 +33,12 @@ async def calculate_pit_window(
     driver_number = driver_num_result.scalar()
 
     # Get driver's tyre stints by driver_number
+    # Get driver's tyre stints — driver_id backfilled from driver_number mapping
     stints_result = await db.execute(
         select(TyreStint)
         .where(TyreStint.race_id == race_id)
-        .where(TyreStint.driver_number == driver_number)
+        .where(TyreStint.driver_id == driver_id)
         .order_by(TyreStint.stint_number)
-    ) if driver_number else await db.execute(
-        select(TyreStint).where(TyreStint.race_id == race_id + 999999)  # empty
     )
     stints = stints_result.scalars().all()
 
