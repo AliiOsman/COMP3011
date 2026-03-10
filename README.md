@@ -2,6 +2,7 @@
 ## Live API
 Base URL:   https://comp3011-f1-api.onrender.com
 Documentation:   https://comp3011-f1-api.onrender.com/docs
+Front end: https://f1-dashboard-1ula.onrender.com
 
 ---
 
