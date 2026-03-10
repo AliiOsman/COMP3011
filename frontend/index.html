@@ -545,10 +545,9 @@ async function loadDropdowns() {
   }
 
   try {
-    const rd = await get('/api/v1/races/?limit=500');
+    const rd = await get('/api/v1/races/?limit=200');
     const races = Array.isArray(rd) ? rd : (rd.races || rd.items || rd.data || []);
     if (!races.length) throw new Error('empty');
-    // Only races confirmed to have tyre stint data seeded
     const racesWithStints = new Set([
       104,105,106,107,109,110,111,112,114,115,116,117,
       118,119,120,122,123,124,126,127,129,130,132
