@@ -361,8 +361,7 @@ Full interactive documentation is available at:
 | ReDoc | https://comp3011-f1-api.onrender.com/redoc |
 | OpenAPI JSON | https://comp3011-f1-api.onrender.com/openapi.json |
 
-(API_DOC.pdf)
-
+[View the API DOC](./API_DOC.pdf)
 ---
 
 ## License
