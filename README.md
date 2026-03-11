@@ -139,51 +139,35 @@ git clone https://github.com/AliiOsman/COMP3011.git
 cd COMP3011
 ```
 
-### 2. Create Virtual Environment
 
-```bash
-python -m venv venv
-source venv/bin/activate        # Linux/macOS
-venv\Scripts\activate           # Windows
-```
-
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure Environment
+### 2. Configure Environment
 
 Create a `.env` file in the project root:
-
 ```env
-DATABASE_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/f1_strategy
+DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/f1_strategy
 SECRET_KEY=your-secret-key-here
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 GROQ_API_KEY=your-groq-api-key
 ```
 
-> Generate a strong secret key with: `openssl rand -hex 32`
+> Generate a strong secret key with: `openssl rand -hex 32`  
+> Get a free Groq API key at [console.groq.com](https://console.groq.com)
 
-### 5. Create the Database
-
+### 3. Start the API and Database
 ```bash
-createdb f1_strategy
+docker compose up --build
 ```
 
-### 6. Run Migrations
+### 4. Create Tables and Seed Data
 
+In a new terminal:
 ```bash
-alembic upgrade head
+docker compose exec api python scripts/create_tables.py
+docker compose exec api python scripts/seed_ergast.py
 ```
 
-### 7. Seed the Database
-
-```bash
-python scripts/seed_ergast.py
-```
+> Seeding takes several minutes. Only needs to be run once.
 
 The seeder runs three phases:
 
