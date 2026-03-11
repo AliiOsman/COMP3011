@@ -92,8 +92,6 @@ This project delivers a production-deployed REST API that combines historical F1
                     │   Groq API (LLaMA 3.1)│
                     │   Ollama (local dev)  │
                     └───────────────────────┘
-________________________________________
-
 ```
 ---
 
