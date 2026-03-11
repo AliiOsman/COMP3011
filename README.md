@@ -175,11 +175,7 @@ The seeder runs three phases:
 2. **Phase 2 — Jolpica/Ergast API:** 2024 season races and results
 3. **Phase 3 — OpenF1 API:** tyre stints and weather snapshots for 2023–2024 sessions
 
-### 8. Start the Server
-
-```bash
-uvicorn app.main:app --reload
-```
+### 5. All Done visit the API 
 
 - API: http://localhost:8000
 - Swagger UI: http://localhost:8000/docs
